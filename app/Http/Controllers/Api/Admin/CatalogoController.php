@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CatalogoResource;
 use App\Models\Catalogo;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,8 @@ class CatalogoController extends Controller
 
     public function index()
     {
-        //
+        $catalogos = Catalogo::getOrPaginate();
+        return  CatalogoResource::collection($catalogos);
     }
 
 
