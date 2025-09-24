@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\TipoDocumentoEnum;
 
 return new class extends Migration
 {
@@ -12,8 +11,8 @@ return new class extends Migration
         Schema::create('catalogos', function (Blueprint $table) {
             $table->id();
             $table->date('fecha_registro');
-            $table->enum('tipo_documento', array_column(TipoDocumentoEnum::cases(), 'name')); //solo los tipos de documentos que se encuentra en TipoDocumentoEnum
-            $table->string('isbn', 100)->unique();
+            $table->integer('tipo_documento'); //, array_column(TipoDocumentoEnum::cases(), 'name')); //solo los tipos de documentos que se encuentra en TipoDocumentoEnum
+            $table->string('isbn', 50)->unique();
             $table->string('titulo');
             $table->string('sub_titulo')->nullable();
 

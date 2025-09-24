@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('autors', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->comment('Nombre of the author');
-            $table->string('nacionalidad')->comment('Nacionalidad of the author');
+            $table->string('nacionalidad', 1)->comment('Nacionalidad of the author');
             $table->timestamps();
         });
     }

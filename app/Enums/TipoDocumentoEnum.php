@@ -1,12 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Enums;
 
-enum TipoDocumentoEnum
+enum TipoDocumentoEnum: int
 {
-    case Libro;
-    case Revista;
-    case Novela;
+    case Libro     = 1;
+    case Revista   = 2;
+    case Novela    = 3;
 
     public function label(): string
     {

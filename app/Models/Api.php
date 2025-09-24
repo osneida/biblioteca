@@ -10,21 +10,29 @@ use Illuminate\Database\Eloquent\Model;
 
 class Api extends Model
 {
+    /**
+     * Scopes globales configurables por el modelo hijo.
+     */
+    protected static $globalScopes = [
+        FilterScope::class,
+        SelectScope::class,
+        SortScope::class,
+        IncludeScope::class,
+    ];
+
     protected static function booted(): void
     {
-        static::addGlobalScopes([
-            FilterScope::class,
-            SelectScope::class,
-            SortScope::class,
-            IncludeScope::class,
-        ]);
+        foreach (static::$globalScopes as $scope) {
+            static::addGlobalScope(new $scope);
+        }
     }
 
-    public function scopeGetOrPaginate($query)
+    /**
+     * Obtiene todos los registros o los pagina según el parámetro.
+     */
+    public function scopeGetOrPaginate($query, $perPage = null)
     {
-        if (request('perPage')) {
-            return $query->paginate(request('perPage'));
-        }
-        return $query->get();
+        $perPage = $perPage ?? request('perPage');
+        return $perPage ? $query->paginate($perPage) : $query->get();
     }
 }
