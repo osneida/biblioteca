@@ -17,6 +17,15 @@ class SelectScope implements Scope
 
         $select = request('select');
         $selectArray = explode(',', $select);
-        $builder->select($selectArray);
+
+        // Filtrar solo los campos válidos definidos en el modelo
+        $validFields = method_exists($model, 'getFillable') ? $model->getFillable() : [];
+        // Siempre permitir 'id' aunque no esté en fillable
+        $validFields[] = $model->getKeyName();
+        $selectArray = array_intersect($selectArray, $validFields);
+
+        if (!empty($selectArray)) {
+            $builder->select($selectArray);
+        }
     }
 }

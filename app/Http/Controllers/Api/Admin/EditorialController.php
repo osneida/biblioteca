@@ -45,6 +45,7 @@ class EditorialController extends Controller
      */
     public function destroy(Editorial $editorial)
     {
-        //
+        //cuando todo este bien el mensaje: success
+        //es status code 204 todo salio bien pero no hay contenido que devolver
     }
 }

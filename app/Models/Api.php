@@ -35,4 +35,22 @@ class Api extends Model
         $perPage = $perPage ?? request('perPage');
         return $perPage ? $query->paginate($perPage) : $query->get();
     }
+
+    /**
+     * Obtiene un registro según los scope SelectScope y/o IncludeScope.
+     */
+    public function scopeGetShow($query)
+    {
+        // Aplica SelectScope (selección de campos)
+        if (method_exists($this, 'applySelectScope')) {
+            $query = $this->applySelectScope($query);
+        }
+
+        // Aplica IncludeScope (inclusión de relaciones)
+        if (method_exists($this, 'applyIncludeScope')) {
+            $query = $this->applyIncludeScope($query);
+        }
+
+        return $query->firstOrFail();
+    }
 }

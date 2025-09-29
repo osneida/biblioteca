@@ -11,25 +11,46 @@ class CatalogoResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        return [
-            'id' => $this->id,
-            'fecha_registro' => $this->fecha_registro,
-            'tipo_documento' => $this->tipo_documento,
-            'tipo_documento_label' => TipoDocumentoEnum::tryFrom($this->tipo_documento)?->label() ?? '', // Convertir el valor numérico a etiqueta
-            'isbn' => $this->isbn,
-            'titulo' => $this->titulo,
-            'sub_titulo' => $this->sub_titulo,
-            'autor_id' => $this->autor_id,
-            'autor' =>  new AutorResource($this->whenLoaded('autor')),
-            'editorial_id' => $this->editorial_id,
-            'editorial' => new EditorialResource($this->whenLoaded('editorial')),
-        ];
-    }
+        // Solo mostrar los atributos realmente cargados (por SelectScope),
+        // incluir 'id' solo si está en los atributos seleccionados o si no hay filtro select
+        $data = [];
+        $attributes = $this->resource->getAttributes();
+        $fillable = method_exists($this->resource, 'getFillable') ? $this->resource->getFillable() : array_keys($attributes);
 
-    public function with($request)
-    {
-        return [
-            'message' => $this->additional['message'] ?? null,
-        ];
+        $select = request('select');
+        $selectArray = $select ? explode(',', $select) : null;
+
+        // Incluir 'id' si está en los atributos seleccionados o si no hay filtro select
+        if ((is_array($selectArray) && in_array('id', $selectArray)) || is_null($selectArray)) {
+            $data['id'] = $this->id;
+        }
+
+        foreach ($attributes as $field => $value) {
+            if (!in_array($field, $fillable)) continue;
+            // Evitar duplicar 'id'
+            if ($field === 'id' && isset($data['id'])) continue;
+            switch ($field) {
+                case 'tipo_documento':
+                    $data['tipo_documento'] = $this->tipo_documento;
+                    $data['tipo_documento_label'] = TipoDocumentoEnum::tryFrom($this->tipo_documento)?->label() ?? '';
+                    break;
+                case 'autor_id':
+                    $data['autor_id'] = $this->autor_id;
+                    if ($this->relationLoaded('autor')) {
+                        $data['autor'] = new AutorResource($this->autor);
+                    }
+                    break;
+                case 'editorial_id':
+                    $data['editorial_id'] = $this->editorial_id;
+                    if ($this->relationLoaded('editorial')) {
+                        $data['editorial'] = new EditorialResource($this->editorial);
+                    }
+                    break;
+                default:
+                    $data[$field] = $value;
+            }
+        }
+
+        return $data;
     }
 }
