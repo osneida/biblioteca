@@ -10,8 +10,11 @@ return new class extends Migration
     {
         Schema::create('autors', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->comment('Nombre of the author');
+            $table->string('nombre', 100)->comment('Nombre of the author');
             $table->string('nacionalidad', 1)->comment('Nacionalidad of the author');
+            $table->date('fecha_nacimiento')->nullable()->comment('Fecha de nacimiento del autor');
+            $table->date('fecha_fallecimiento')->nullable()->comment('Fecha de fallecimiento del autor');
+            $table->text('biografia')->nullable()->comment('Biografía del autor');
             $table->timestamps();
         });
     }

@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Catalogo extends Api
 {
+    public function ejemplares()
+    {
+        return $this->hasMany(Ejemplar::class);
+    }
     /**
      * use App\Models\Scopes\FilterScope;
      * use App\Models\Scopes\SortScope;
@@ -23,13 +27,14 @@ class Catalogo extends Api
         'isbn',
         'titulo',
         'sub_titulo',
-        'autor_id',
+
         'editorial_id'
     ];
 
-    public function autor(): BelongsTo
+
+    public function autores()
     {
-        return $this->belongsTo(Autor::class);
+        return $this->belongsToMany(Autor::class, 'autor_catalogo', 'catalogo_id', 'autor_id');
     }
 
     public function editorial(): BelongsTo

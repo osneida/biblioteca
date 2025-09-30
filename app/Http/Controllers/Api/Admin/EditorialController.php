@@ -3,49 +3,93 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EditorialRequest;
+use App\Http\Resources\EditorialResource;
 use App\Models\Editorial;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class EditorialController extends Controller
+class EditorialController extends Controller implements HasMiddleware
 {
-    /**
-     * Display a listing of the resource.
-     */
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:api', except: ['index', 'show']),
+        ];
+    }
+
     public function index()
     {
-        //
+        $editoriales = Editorial::getOrPaginate();
+        return  EditorialResource::collection($editoriales);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(EditorialRequest $request)
     {
-        //
+        try {
+            $editorial = Editorial::create($request->all());
+            if (!$editorial) {
+                return response()->json([
+                    'message' => 'No se pudo crear la editorial.'
+                ], 400);
+            }
+            return (new EditorialResource($editorial))->additional([
+                'message' => 'success',
+            ])->setStatusCode(201);
+        } catch (\Throwable $th) {
+            Log::error("Error EditorialController - store", ['data' => $th]);
+            return response()->json([
+                'message' => 'Ocurrió un error al intentar crear la editorial.'
+            ], 500);
+        }
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Editorial $editorial)
     {
-        //
+        $editorial = $editorial->getShow();
+        return new EditorialResource($editorial);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Editorial $editorial)
+    public function update(EditorialRequest $request, Editorial $editorial)
     {
-        //
+        try {
+            $data = $request->all();
+            if (!$editorial->isDirty($data)) {
+                return response()->json([
+                    'message' => 'No hubo cambios para actualizar.'
+                ], 200);
+            }
+            $editorial->update($data);
+            return (new EditorialResource($editorial))->additional([
+                'message' => 'success',
+            ])->setStatusCode(200);
+        } catch (\Throwable $th) {
+            Log::error("Error EditorialController - update", ['data' => $th]);
+            return response()->json([
+                'message' => 'Ocurrió un error al intentar actualizar la editorial.'
+            ], 500);
+        }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Editorial $editorial)
     {
-        //cuando todo este bien el mensaje: success
-        //es status code 204 todo salio bien pero no hay contenido que devolver
+        try {
+            // Verificar si la editorial tiene catálogos asociados
+            if ($editorial->catalogos()->exists()) {
+                return response()->json([
+                    'message' =>  'No se puede eliminar la Editorial porque tiene un documento asociado.',
+                ], 409); // 409 Conflict
+            }
+
+            // Si no tiene catálogo se procede a eliminar
+            $editorial->delete();
+            return response()->noContent(); // 204 sin cuerpo
+        } catch (\Throwable $th) {
+            Log::error("Error EditorialController - destroy", ['data' => $th]);
+            return response()->json([
+                'message' => 'Ocurrió un error al intentar eliminar la editorial.'
+            ], 500);
+        }
     }
 }

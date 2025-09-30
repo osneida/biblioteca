@@ -8,6 +8,7 @@ class Editorial extends Model
 {
     protected $fillable = [
         'nombre',
+        'direccion'
     ];
 
     public function catalogos()

@@ -8,11 +8,14 @@ class Autor extends Model
 {
     protected $fillable = [
         'nombre',
-        'nacionalidad'
+        'nacionalidad',
+        'fecha_nacimiento',
+        'fecha_fallecimiento',
+        'biografia'
     ];
 
     public function catalogos()
     {
-        return $this->hasMany(Catalogo::class);
+        return $this->belongsToMany(Catalogo::class, 'autor_catalogo', 'autor_id', 'catalogo_id');
     }
 }
