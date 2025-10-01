@@ -14,6 +14,7 @@ class Ejemplar extends Model
     protected $fillable = [
         'catalogo_id',
         'nro_ejemplar',
+        'codigo',
         'estatus',
     ];
 

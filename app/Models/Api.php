@@ -41,6 +41,9 @@ class Api extends Model
      */
     public function scopeGetShow($query)
     {
+        // Filtra por el id del modelo actual
+        $query = $query->where($this->getKeyName(), $this->getKey());
+
         // Aplica SelectScope (selección de campos)
         if (method_exists($this, 'applySelectScope')) {
             $query = $this->applySelectScope($query);

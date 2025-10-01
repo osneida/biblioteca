@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Catalogo;
 
-class Autor extends Model
+class Autor extends Api
 {
     protected $fillable = [
         'nombre',

@@ -9,6 +9,7 @@ use App\Models\Catalogo;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\DB;
 
 class CatalogoController extends Controller implements HasMiddleware
 {
@@ -28,16 +29,46 @@ class CatalogoController extends Controller implements HasMiddleware
     public function store(CatalogoRequest $request)
     {
         try {
+            DB::beginTransaction();
+
             $catalogo = Catalogo::create($request->all());
             if (!$catalogo) {
                 return response()->json([
                     'message' => 'No se pudo crear el documento.'
                 ], 400);
             }
+
+            // Lógica para crear el ejemplar
+            $catalogo_id = $catalogo->id;
+            $año = date('Y');
+            $mes = date('m');
+
+            // Buscar el último ejemplar creado este mes
+            $ultimoEjemplarMes = \App\Models\Ejemplar::whereYear('created_at', $año)
+                ->whereMonth('created_at', $mes)
+                ->orderByDesc('id')
+                ->first();
+            $correlativo = $ultimoEjemplarMes ? ((int)substr($ultimoEjemplarMes->codigo, -4)) + 1 : 1;
+
+            // Buscar el último nro_ejemplar para este catálogo
+            $ultimoEjemplarCatalogo = $catalogo->ejemplares()->orderByDesc('nro_ejemplar')->first();
+            $nro_ejemplar = $ultimoEjemplarCatalogo ? $ultimoEjemplarCatalogo->nro_ejemplar + 1 : 1;
+
+            // Código: año + mes + correlativo de 4 dígitos
+            $codigo = $año . $mes . str_pad($correlativo, 4, '0', STR_PAD_LEFT);
+
+            \App\Models\Ejemplar::create([
+                'catalogo_id' => $catalogo_id,
+                'nro_ejemplar' => $nro_ejemplar,
+                'codigo' => $codigo,
+            ]);
+            DB::commit();
+
             return (new CatalogoResource($catalogo))->additional([
                 'message' => 'success',
             ])->setStatusCode(201);
         } catch (\Throwable $th) {
+            DB::rollBack();
             Log::error("Error CatalogoController - store", ['data' => $th]);
             return response()->json([
                 'message' => 'Ocurrió un error al intentar crear el documento.'

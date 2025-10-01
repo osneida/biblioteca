@@ -14,11 +14,4 @@ class EditorialResource extends JsonResource
             'nombre' => $this->nombre,
         ];
     }
-
-    public function with($request)
-    {
-        return [
-            'message' => $this->additional['message'] ?? null,
-        ];
-    }
 }

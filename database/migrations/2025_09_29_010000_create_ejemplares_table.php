@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('catalogo_id')->index();
             $table->integer('nro_ejemplar')->comment('Número de ejemplar dentro del catálogo');
+            $table->string('codigo', 10)->unique()->comment('Código único del ejemplar');
             $table->string('estatus', 1)->default(EstatusDisponibilidadEnum::Disponible); // Enum: disponible, prestado, reparacion, perdido, retrasado
             $table->timestamps();
 
