@@ -66,7 +66,7 @@ class CatalogoController extends Controller implements HasMiddleware
 
             return (new CatalogoResource($catalogo))->additional([
                 'message' => 'success',
-            ])->setStatusCode(201);
+            ])->response()->setStatusCode(201);
         } catch (\Throwable $th) {
             DB::rollBack();
             Log::error("Error CatalogoController - store", ['data' => $th]);
@@ -94,7 +94,7 @@ class CatalogoController extends Controller implements HasMiddleware
             $catalogo->update($data);
             return (new CatalogoResource($catalogo))->additional([
                 'message' => 'success',
-            ])->setStatusCode(200);
+            ]);
         } catch (\Throwable $th) {
             Log::error("Error CatalogoController - update", ['data' => $th]);
             return response()->json([

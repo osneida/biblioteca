@@ -36,7 +36,7 @@ class EditorialController extends Controller implements HasMiddleware
             }
             return (new EditorialResource($editorial))->additional([
                 'message' => 'success',
-            ])->setStatusCode(201);
+            ])->response()->setStatusCode(201);
         } catch (\Throwable $th) {
             Log::error("Error EditorialController - store", ['data' => $th]);
             return response()->json([
@@ -45,25 +45,20 @@ class EditorialController extends Controller implements HasMiddleware
         }
     }
 
-    public function show(Editorial $editorial)
+    public function show(Editorial $editoriale)
     {
-        $editorial = $editorial->getShow();
-        return new EditorialResource($editorial);
+        $editoriale = $editoriale->getShow();
+        return new EditorialResource($editoriale);
     }
 
-    public function update(EditorialRequest $request, Editorial $editorial)
+    public function update(EditorialRequest $request, Editorial $editoriale)
     {
         try {
             $data = $request->all();
-            if (!$editorial->isDirty($data)) {
-                return response()->json([
-                    'message' => 'No hubo cambios para actualizar.'
-                ], 200);
-            }
-            $editorial->update($data);
-            return (new EditorialResource($editorial))->additional([
+            $editoriale->update($data);
+            return (new EditorialResource($editoriale))->additional([
                 'message' => 'success',
-            ])->setStatusCode(200);
+            ]);
         } catch (\Throwable $th) {
             Log::error("Error EditorialController - update", ['data' => $th]);
             return response()->json([
@@ -72,18 +67,18 @@ class EditorialController extends Controller implements HasMiddleware
         }
     }
 
-    public function destroy(Editorial $editorial)
+    public function destroy(Editorial $editoriale)
     {
         try {
             // Verificar si la editorial tiene catálogos asociados
-            if ($editorial->catalogos()->exists()) {
+            if ($editoriale->catalogos()->exists()) {
                 return response()->json([
                     'message' =>  'No se puede eliminar la Editorial porque tiene un documento asociado.',
                 ], 409); // 409 Conflict
             }
 
             // Si no tiene catálogo se procede a eliminar
-            $editorial->delete();
+            $editoriale->delete();
             return response()->noContent(); // 204 sin cuerpo
         } catch (\Throwable $th) {
             Log::error("Error EditorialController - destroy", ['data' => $th]);
