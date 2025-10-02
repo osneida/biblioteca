@@ -45,18 +45,18 @@ class EditorialController extends Controller implements HasMiddleware
         }
     }
 
-    public function show(Editorial $editoriale)
+    public function show(Editorial $editorial)
     {
-        $editoriale = $editoriale->getShow();
-        return new EditorialResource($editoriale);
+        $editorial = $editorial->getShow();
+        return new EditorialResource($editorial);
     }
 
-    public function update(EditorialRequest $request, Editorial $editoriale)
+    public function update(EditorialRequest $request, Editorial $editorial)
     {
         try {
             $data = $request->all();
-            $editoriale->update($data);
-            return (new EditorialResource($editoriale))->additional([
+            $editorial->update($data);
+            return (new EditorialResource($editorial))->additional([
                 'message' => 'success',
             ]);
         } catch (\Throwable $th) {
@@ -67,18 +67,18 @@ class EditorialController extends Controller implements HasMiddleware
         }
     }
 
-    public function destroy(Editorial $editoriale)
+    public function destroy(Editorial $editorial)
     {
         try {
             // Verificar si la editorial tiene catálogos asociados
-            if ($editoriale->catalogos()->exists()) {
+            if ($editorial->catalogos()->exists()) {
                 return response()->json([
                     'message' =>  'No se puede eliminar la Editorial porque tiene un documento asociado.',
                 ], 409); // 409 Conflict
             }
 
             // Si no tiene catálogo se procede a eliminar
-            $editoriale->delete();
+            $editorial->delete();
             return response()->noContent(); // 204 sin cuerpo
         } catch (\Throwable $th) {
             Log::error("Error EditorialController - destroy", ['data' => $th]);

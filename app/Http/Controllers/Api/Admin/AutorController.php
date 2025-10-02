@@ -40,17 +40,17 @@ class AutorController extends Controller implements HasMiddleware
         }
     }
 
-    public function show(Autor $autore)
+    public function show(Autor $autor)
     {
-        $autore = $autore->getShow();
-        return new AutorResource($autore);
+        $autor = $autor->getShow();
+        return new AutorResource($autor);
     }
 
-    public function update(AutorRequest $request, Autor $autore)
+    public function update(AutorRequest $request, Autor $autor)
     {
         try {
-            $autore->update($request->all());
-            return (new AutorResource($autore))->additional([
+            $autor->update($request->all());
+            return (new AutorResource($autor))->additional([
                 'message' => 'success',
             ]);
         } catch (\Throwable $th) {
@@ -61,18 +61,18 @@ class AutorController extends Controller implements HasMiddleware
         }
     }
 
-    public function destroy(Autor $autore)
+    public function destroy(Autor $autor)
     {
         try {
             // Verificar el autor tiene catalogos asociados
-            if ($autore->catalogos()->exists()) {
+            if ($autor->catalogos()->exists()) {
                 return response()->json([
                     'message' =>  'No se puede eliminar el autor porque tiene un documento asociado.',
                 ], 409);
             }
 
             // Si no tiene catalogo se procede a eliminar
-            $autore->delete();
+            $autor->delete();
             return response()->noContent(); // 204 sin cuerpo
         } catch (\Throwable $th) {
             Log::error("Error AutorController - destroy", ['data' => $th]);
