@@ -2,24 +2,15 @@
 
 namespace App\Models;
 
+use App\Models\Traits\HasGlobalScopes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Catalogo extends Api
+class Catalogo extends Model
 {
-    public function ejemplares()
-    {
-        return $this->hasMany(Ejemplar::class);
-    }
-    /**
-     * use App\Models\Scopes\FilterScope;
-     * use App\Models\Scopes\SortScope;
-     *  * Scopes globales configurables por el modelo hijo.
-     *  protected static $globalScopes = [
-     *       FilterScope::class,
-     *       SortScope::class,
-     *   ];
-     */
-
+    use HasGlobalScopes;
 
     public $fillable = [
         'fecha_registro',
@@ -27,18 +18,22 @@ class Catalogo extends Api
         'isbn',
         'titulo',
         'sub_titulo',
-
         'editorial_id'
     ];
 
 
-    public function autores()
+    public function autores(): BelongsToMany
     {
-        return $this->belongsToMany(Autor::class, 'autor_catalogo', 'catalogo_id', 'autor_id');
+        return $this->belongsToMany(Autor::class); //, 'autor_catalogo', 'catalogo_id', 'autor_id');
     }
 
     public function editorial(): BelongsTo
     {
         return $this->belongsTo(Editorial::class);
+    }
+
+    public function ejemplares(): HasMany
+    {
+        return $this->hasMany(Ejemplar::class);
     }
 }

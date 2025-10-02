@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Catalogo;
+use App\Models\Traits\HasGlobalScopes;
 
-class Autor extends Api
+class Autor extends Model
 {
+    use HasGlobalScopes;
+
     protected $fillable = [
         'nombre',
         'nacionalidad',
@@ -17,6 +20,7 @@ class Autor extends Api
 
     public function catalogos()
     {
-        return $this->belongsToMany(Catalogo::class, 'autor_catalogo', 'autor_id', 'catalogo_id');
+        return $this->belongsToMany(Catalogo::class);
+        //return $this->belongsToMany(Catalogo::class, 'autor_catalogo', 'autor_id', 'catalogo_id');
     }
 }

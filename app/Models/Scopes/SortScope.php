@@ -12,7 +12,7 @@ class SortScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         if (empty(request('sort'))) {
-            $builder->orderBy('id', 'desc');
+            // $builder->orderBy('id', 'desc');
             return;
         }
 
