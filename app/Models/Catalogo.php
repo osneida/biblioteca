@@ -13,18 +13,21 @@ class Catalogo extends Model
     use HasGlobalScopes;
 
     public $fillable = [
-        'fecha_registro',
+        'fecha_ingreso',
         'tipo_documento',
         'isbn',
         'titulo',
-        'sub_titulo',
+        'subtitulo',
+        'fecha_publicacion',
+        'descripcion_fisica',
+        'notas',
         'editorial_id'
     ];
 
 
     public function autores(): BelongsToMany
     {
-        return $this->belongsToMany(Autor::class); //, 'autor_catalogo', 'catalogo_id', 'autor_id');
+        return $this->belongsToMany(Autor::class, 'autor_catalogo', 'catalogo_id', 'autor_id');
     }
 
     public function editorial(): BelongsTo

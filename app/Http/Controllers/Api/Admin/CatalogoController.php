@@ -62,6 +62,9 @@ class CatalogoController extends Controller implements HasMiddleware
                 'nro_ejemplar' => $nro_ejemplar,
                 'codigo' => $codigo,
             ]);
+
+            // Sincronizar autores
+            $catalogo->autores()->sync($request->input('autores', []));
             DB::commit();
 
             return (new CatalogoResource($catalogo))->additional([

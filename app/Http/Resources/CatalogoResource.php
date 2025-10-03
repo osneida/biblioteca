@@ -47,6 +47,9 @@ class CatalogoResource extends JsonResource
                     }
                     break;
                 default:
+                    if ($this->relationLoaded('ejemplares')) {
+                        $data['ejemplares'] = new EjemplarResource($this->editorial);
+                    }
                     $data[$field] = $value;
             }
         }

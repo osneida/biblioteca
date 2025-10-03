@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('ejemplares', function (Blueprint $table) {
+        Schema::create('ejemplars', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('catalogo_id')->index();
             $table->integer('nro_ejemplar')->comment('Número de ejemplar dentro del catálogo');
