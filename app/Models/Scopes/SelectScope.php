@@ -8,24 +8,48 @@ use Illuminate\Database\Eloquent\Scope;
 
 class SelectScope implements Scope
 {
-
     public function apply(Builder $builder, Model $model): void
     {
+        // -------------------------------------------------------------------
+        // 🔥 FIX CRÍTICO: Autodefensa para evitar la fuga a subconsultas (Eager Loading).
+        // Si la tabla actual NO es la tabla del modelo base, ignoramos la aplicación.
+        $modelTableName = $model->getTable();
+        $currentQueryTable = $builder->getQuery()->from;
+
+        if ($currentQueryTable !== $modelTableName) {
+            return;
+        }
+        // -------------------------------------------------------------------
+
         if (empty(request('select'))) {
             return;
         }
 
         $select = request('select');
-        $selectArray = explode(',', $select);
+        $requestedFields = explode(',', $select);
 
-        // Filtrar solo los campos válidos definidos en el modelo
+        // 1. Definir campos válidos base
         $validFields = method_exists($model, 'getFillable') ? $model->getFillable() : [];
-        // Siempre permitir 'id' aunque no esté en fillable
-        $validFields[] = $model->getKeyName();
-        $selectArray = array_intersect($selectArray, $validFields);
 
-        if (!empty($selectArray)) {
-            $builder->select($selectArray);
+        // 2. Incluir siempre la clave primaria
+        $validFields[] = $model->getKeyName();
+
+        // 3. Incluir las columnas de timestamps si existen
+        if ($model->usesTimestamps()) {
+            $validFields[] = $model->getCreatedAtColumn();
+            $validFields[] = $model->getUpdatedAtColumn();
         }
+
+        // 4. Filtrar campos solicitados contra la lista de campos válidos
+        $finalFields = array_intersect($requestedFields, $validFields);
+
+        // Si después del filtrado no queda nada, volvemos a seleccionar solo la clave primaria
+        if (empty($finalFields)) {
+            // Esto asegura que la consulta no falle y al menos se pueda relacionar con otros modelos.
+            $finalFields[] = $model->getKeyName();
+        }
+
+        // Aplicar la selección
+        $builder->select(array_unique($finalFields));
     }
 }

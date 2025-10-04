@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use App\Models\Traits\HasGlobalScopes;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Traits\HasApiFeatures;
 
 class Catalogo extends Model
 {
-    use HasGlobalScopes;
+    use HasApiFeatures;
 
     public $fillable = [
         'fecha_ingreso',
@@ -27,7 +28,7 @@ class Catalogo extends Model
 
     public function autores(): BelongsToMany
     {
-        return $this->belongsToMany(Autor::class, 'autor_catalogo', 'catalogo_id', 'autor_id');
+        return $this->belongsToMany(Autor::class); //, 'autor_catalogo', 'catalogo_id', 'autor_id');
     }
 
     public function editorial(): BelongsTo

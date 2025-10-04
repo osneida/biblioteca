@@ -11,12 +11,29 @@ class SortScope implements Scope
 
     public function apply(Builder $builder, Model $model): void
     {
-        if (empty(request('sort'))) {
-            // $builder->orderBy('id', 'desc');
+        $sort = request('sort');
+
+        if (empty($sort)) {
             return;
         }
 
-        $sort = request('sort');
+        // -------------------------------------------------------------------
+        // FIX CRÍTICO: Evitar fuga del Sort a las subconsultas de relaciones.
+        // -------------------------------------------------------------------
+        // 1. Obtener la tabla del modelo base (ej: 'editoriales').
+        $modelTableName = $model->getTable();
+
+        // 2. Obtener la tabla que se está consultando actualmente.
+        // Usamos el from de la consulta interna para saber a qué tabla aplica el builder.
+        $currentQueryTable = $builder->getQuery()->from;
+
+        // 3. Si la tabla actual NO es la tabla del modelo base,
+        // (es decir, es una consulta de eager loading como 'catalogos'),
+        // NO aplicamos el sort de la Request.
+        if ($currentQueryTable !== $modelTableName) {
+            return;
+        }
+
         $sortArray = explode(',', $sort);
         foreach ($sortArray as $sortItem) {
             $direction = 'asc';

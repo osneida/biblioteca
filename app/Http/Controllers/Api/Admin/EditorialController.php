@@ -21,8 +21,14 @@ class EditorialController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $editoriales = Editorial::getOrPaginate();
-        return  EditorialResource::collection($editoriales);
+        $editoriales = Editorial::query()
+            // Llama explícitamente al scope compuesto.
+            // Esto garantiza que solo se aplique al query principal (Editorial),
+            // y no a las subconsultas de 'catalogos'.
+            ->applyApiFeatures()
+            ->getOrPaginate();
+
+        return response()->json($editoriales);
     }
 
     public function store(EditorialRequest $request)
@@ -47,8 +53,11 @@ class EditorialController extends Controller implements HasMiddleware
 
     public function show(Editorial $editoriale)
     {
-        $editoriale = $editoriale->getShow();
-        return new EditorialResource($editoriale);
+        $editorial = $editoriale->query()
+            ->applyApiFeatures()
+            ->getShow(); // Aunque getShow() ya aplica las características de API.
+
+        return response()->json($editorial);
     }
 
     public function update(EditorialRequest $request, Editorial $editoriale)

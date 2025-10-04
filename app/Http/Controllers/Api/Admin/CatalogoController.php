@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Stmt\TryCatch;
 
 class CatalogoController extends Controller implements HasMiddleware
 {
@@ -22,8 +23,13 @@ class CatalogoController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $catalogos = Catalogo::getOrPaginate();
-        return  CatalogoResource::collection($catalogos);
+        //$catalogos = Catalogo::getOrPaginate();
+        $catalogos = Catalogo::query()
+            ->applyApiFeatures()
+            ->getOrPaginate();
+
+        return response()->json($catalogos);
+        //return $catalogos; //CatalogoResource::collection($catalogos);
     }
 
     public function store(CatalogoRequest $request)
@@ -81,8 +87,31 @@ class CatalogoController extends Controller implements HasMiddleware
 
     public function show(Catalogo $catalogo)
     {
-        $catalogo = $catalogo->getShow();
-        return new CatalogoResource($catalogo);
+        try {
+            $query = Catalogo::query();
+
+            // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
+            $query->where($catalogo->getKeyName(), $catalogo->getKey());
+            $query->applyApiFeatures();
+            $catalogo = $query->get()->firstOrFail(); //para lanzar los autores porque es una relacion muchos a muchos
+            //return new CatalogoResource($catalogo);
+
+
+            //TODO modificar CatalogoResource para que muestre autoes cuando se solicite
+
+            //quiero validar que cuando el codigo de Status sea 404 me muestre el mensaje personalizado
+            if ($catalogo) {
+                return response()->json($catalogo);
+            } else {
+                return response()->json([
+                    'message' => 'No se encontró el documento solicitado.'
+                ], 404);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'message' => 'No se encontró el documento solicitado.'
+            ], 404);
+        }
     }
 
     public function update(CatalogoRequest $request, Catalogo $catalogo)

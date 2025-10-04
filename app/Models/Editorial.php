@@ -4,11 +4,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Traits\HasGlobalScopes;
+use App\Models\Traits\HasApiFeatures; // Importa el nuevo Trait
 
 class Editorial extends Model
 {
-    use HasGlobalScopes;
+    use HasApiFeatures;
 
     protected $fillable = [
         'nombre',

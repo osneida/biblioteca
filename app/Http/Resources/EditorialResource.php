@@ -13,6 +13,7 @@ class EditorialResource extends JsonResource
             'id'        => $this->id,
             'nombre'    => $this->nombre,
             'direccion' => $this->direccion,
+            'catalogos' => CatalogoResource::collection($this->whenLoaded('catalogos')),
         ];
     }
 }
