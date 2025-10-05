@@ -21,7 +21,11 @@ class AutorController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $autores = Autor::getOrPaginate();
+
+        $autores = Autor::query()
+            ->applyApiFeatures()
+            ->getOrPaginate();
+
         return  AutorResource::collection($autores);
     }
 
@@ -42,8 +46,17 @@ class AutorController extends Controller implements HasMiddleware
 
     public function show(Autor $autore)
     {
-        $autore = $autore->getShow();
-        return new AutorResource($autore);
+
+        $query = Autor::query();
+        // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
+        $query->where($autore->getKeyName(), $autore->getKey());
+        // Aplicar los mismos scopes que en index (select, include, filters, sort)
+        $query->applyApiFeatures();
+
+        // Obtener directamente el primer resultado o lanzar ModelNotFoundException
+        $autor = $query->firstOrFail();
+
+        return new AutorResource($autor);
     }
 
     public function update(AutorRequest $request, Autor $autore)

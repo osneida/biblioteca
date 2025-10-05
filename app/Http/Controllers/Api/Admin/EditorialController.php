@@ -22,13 +22,10 @@ class EditorialController extends Controller implements HasMiddleware
     public function index()
     {
         $editoriales = Editorial::query()
-            // Llama explícitamente al scope compuesto.
-            // Esto garantiza que solo se aplique al query principal (Editorial),
-            // y no a las subconsultas de 'catalogos'.
             ->applyApiFeatures()
             ->getOrPaginate();
 
-        return response()->json($editoriales);
+        return  EditorialResource::collection($editoriales);
     }
 
     public function store(EditorialRequest $request)
@@ -53,11 +50,16 @@ class EditorialController extends Controller implements HasMiddleware
 
     public function show(Editorial $editoriale)
     {
-        $editorial = $editoriale->query()
-            ->applyApiFeatures()
-            ->getShow(); // Aunque getShow() ya aplica las características de API.
+        $query = Editorial::query();
+        // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
+        $query->where($editoriale->getKeyName(), $editoriale->getKey());
+        // Aplicar los mismos scopes que en index (select, include, filters, sort)
+        $query->applyApiFeatures();
 
-        return response()->json($editorial);
+        // Obtener directamente el primer resultado o lanzar ModelNotFoundException
+        $editorial = $query->firstOrFail();
+
+        return new EditorialResource($editorial);
     }
 
     public function update(EditorialRequest $request, Editorial $editoriale)

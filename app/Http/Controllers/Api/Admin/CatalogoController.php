@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
-use PhpParser\Node\Stmt\TryCatch;
 
 class CatalogoController extends Controller implements HasMiddleware
 {
@@ -23,13 +22,11 @@ class CatalogoController extends Controller implements HasMiddleware
 
     public function index()
     {
-        //$catalogos = Catalogo::getOrPaginate();
         $catalogos = Catalogo::query()
             ->applyApiFeatures()
             ->getOrPaginate();
 
-        return response()->json($catalogos);
-        //return $catalogos; //CatalogoResource::collection($catalogos);
+        return CatalogoResource::collection($catalogos);
     }
 
     public function store(CatalogoRequest $request)
@@ -37,7 +34,31 @@ class CatalogoController extends Controller implements HasMiddleware
         try {
             DB::beginTransaction();
 
-            $catalogo = Catalogo::create($request->all());
+            //$catalogo = Catalogo::updateOrCreate($request->all());
+
+            // Construir la clave de búsqueda para updateOrCreate. No incluir
+            // isbn en la búsqueda si viene null para evitar emparejar por null.
+            $searchData = [
+                'tipo_documento' => $request['tipo_documento'],
+                'editorial_id' => $request['editorial_id'],
+                'titulo' => $request['titulo'],
+                'subtitulo' => $request['subtitulo'],
+                'fecha_publicacion' => $request['fecha_publicacion'],
+                'descripcion_fisica' => $request['descripcion_fisica'],
+                'notas' => $request['notas']
+            ];
+
+            if ($request->filled('isbn')) {
+                $searchData['isbn'] = $request['isbn'];
+            }
+
+            $catalogo = Catalogo::updateOrCreate(
+                $searchData,
+                [
+                    'fecha_ingreso' => $request['fecha_ingreso'],
+                ]
+            );
+
             if (!$catalogo) {
                 return response()->json([
                     'message' => 'No se pudo crear el documento.'
@@ -92,22 +113,16 @@ class CatalogoController extends Controller implements HasMiddleware
 
             // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
             $query->where($catalogo->getKeyName(), $catalogo->getKey());
+            // Aplicar los mismos scopes que en index (select, include, filters, sort)
             $query->applyApiFeatures();
-            $catalogo = $query->get()->firstOrFail(); //para lanzar los autores porque es una relacion muchos a muchos
-            //return new CatalogoResource($catalogo);
 
+            // Obtener directamente el primer resultado o lanzar ModelNotFoundException
+            $catalogo = $query->firstOrFail();
 
-            //TODO modificar CatalogoResource para que muestre autoes cuando se solicite
-
-            //quiero validar que cuando el codigo de Status sea 404 me muestre el mensaje personalizado
-            if ($catalogo) {
-                return response()->json($catalogo);
-            } else {
-                return response()->json([
-                    'message' => 'No se encontró el documento solicitado.'
-                ], 404);
-            }
+            return new CatalogoResource($catalogo);
         } catch (\Throwable $th) {
+            // Si es una excepción de tipo ModelNotFound, devolver 404 con mensaje personalizado.
+            // Para cualquier otra excepción, también devolvemos 404 aquí para no filtrar detalles internos.
             return response()->json([
                 'message' => 'No se encontró el documento solicitado.'
             ], 404);
@@ -148,17 +163,3 @@ class CatalogoController extends Controller implements HasMiddleware
         }
     }
 }
-
-/**
- * Para una API RESTful en Laravel (y en general):
-
- *index y show: 200 OK
- *store: 201 Created
- *update: 200 OK (si devuelves el recurso actualizado) o 204 No Content (si no devuelves contenido)
- *delete: 204 No Content (si no devuelves contenido) o 200 OK (si devuelves algún mensaje o el recurso eliminado)
- *Lo más común es:
- *
- *update → 200 OK
- *delete → 204 No Content
- *Usa 204 si la respuesta no tiene body, solo cabeceras.
- */

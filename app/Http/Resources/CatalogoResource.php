@@ -8,7 +8,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CatalogoResource extends JsonResource
 {
-
     public function toArray(Request $request): array
     {
         // Solo mostrar los atributos realmente cargados (por SelectScope),
@@ -17,7 +16,7 @@ class CatalogoResource extends JsonResource
         $attributes = $this->resource->getAttributes();
         $fillable = method_exists($this->resource, 'getFillable') ? $this->resource->getFillable() : array_keys($attributes);
 
-        $select = request('select');
+        $select = $request->query('select');
         $selectArray = $select ? explode(',', $select) : null;
 
         // Incluir 'id' si está en los atributos seleccionados o si no hay filtro select
@@ -34,24 +33,25 @@ class CatalogoResource extends JsonResource
                     $data['tipo_documento'] = $this->tipo_documento;
                     $data['tipo_documento_label'] = TipoDocumentoEnum::tryFrom($this->tipo_documento)?->label() ?? '';
                     break;
-                case 'autor_id':
-                    $data['autor_id'] = $this->autor_id;
-                    if ($this->relationLoaded('autor')) {
-                        $data['autor'] = new AutorResource($this->autor);
-                    }
-                    break;
-                case 'editorial_id':
-                    $data['editorial_id'] = $this->editorial_id;
-                    if ($this->relationLoaded('editorial')) {
-                        $data['editorial'] = new EditorialResource($this->editorial);
-                    }
-                    break;
+                // case 'editorial_id':
+                //     $data['editorial_id'] = $this->editorial_id;
+                //     break;
                 default:
-                    if ($this->relationLoaded('ejemplares')) {
-                        $data['ejemplares'] = new EjemplarResource($this->editorial);
-                    }
                     $data[$field] = $value;
             }
+        }
+
+        // Incluir relaciones que puedan haber sido solicitadas por include=
+        if ($this->relationLoaded('autores')) {
+            $data['autores'] = AutorResource::collection($this->autores);
+        }
+
+        if ($this->relationLoaded('editorial')) {
+            $data['editorial'] = new EditorialResource($this->editorial);
+        }
+
+        if ($this->relationLoaded('ejemplares')) {
+            $data['ejemplares'] = EjemplarResource::collection($this->ejemplares);
         }
 
         return $data;

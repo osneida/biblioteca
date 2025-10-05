@@ -19,6 +19,8 @@ class Ejemplar extends Model
         'nro_ejemplar',
         'codigo',
         'estatus',
+        // 'fecha_ingreso',
+        //TODO: modificar para colocar fecha_ingreso, quitalo de catalogo
     ];
 
     public function catalogo()

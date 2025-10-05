@@ -7,13 +7,14 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class EjemplarResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => $this->id,
+            'catalogo_id' => $this->catalogo_id,
+            'nro_ejemplar' => $this->nro_ejemplar,
+            'codigo' => $this->codigo,
+            'estatus' => $this->estatus
+        ];
     }
 }

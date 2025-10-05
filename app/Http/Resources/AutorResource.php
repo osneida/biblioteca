@@ -36,6 +36,12 @@ class AutorResource extends JsonResource
                     $data[$field] = $value;
             }
         }
+
+        // Incluir relaciones que puedan haber sido solicitadas por include=
+        if ($this->relationLoaded('catalogos')) {
+            $data['catalogos'] = CatalogoResource::collection($this->catalogos);
+        }
+
         return $data;
     }
 }
