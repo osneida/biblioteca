@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('ejemplars', function (Blueprint $table) {
             $table->id();
+            $table->date('fecha_ingreso');
             $table->unsignedBigInteger('catalogo_id')->index();
             $table->integer('nro_ejemplar')->comment('Número de ejemplar dentro del catálogo');
             $table->string('codigo', 10)->unique()->comment('Código único del ejemplar');

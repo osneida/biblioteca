@@ -14,7 +14,6 @@ class Catalogo extends Model
     use HasApiFeatures;
 
     public $fillable = [
-        'fecha_ingreso',
         'tipo_documento',
         'isbn',
         'titulo',

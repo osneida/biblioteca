@@ -20,4 +20,12 @@ enum EstatusDisponibilidadEnum: string
             self::Retrasado  => __('Retrasado'),
         };
     }
+
+    /**
+     * Return an array of enum scalar values (e.g. ['V', 'E']).
+     */
+    public static function values(): array
+    {
+        return array_map(fn(EstatusDisponibilidadEnum $c) => $c->value, self::cases());
+    }
 }

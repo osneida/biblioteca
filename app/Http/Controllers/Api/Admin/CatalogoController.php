@@ -53,10 +53,7 @@ class CatalogoController extends Controller implements HasMiddleware
             }
 
             $catalogo = Catalogo::updateOrCreate(
-                $searchData,
-                [
-                    'fecha_ingreso' => $request['fecha_ingreso'],
-                ]
+                $searchData
             );
 
             if (!$catalogo) {
@@ -85,6 +82,7 @@ class CatalogoController extends Controller implements HasMiddleware
             $codigo = $año . $mes . str_pad($correlativo, 4, '0', STR_PAD_LEFT);
 
             \App\Models\Ejemplar::create([
+                'fecha_ingreso' => $request['fecha_ingreso'],
                 'catalogo_id' => $catalogo_id,
                 'nro_ejemplar' => $nro_ejemplar,
                 'codigo' => $codigo,
