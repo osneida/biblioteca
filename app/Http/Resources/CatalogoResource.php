@@ -33,9 +33,10 @@ class CatalogoResource extends JsonResource
                     $data['tipo_documento'] = $this->tipo_documento;
                     $data['tipo_documento_label'] = TipoDocumentoEnum::tryFrom($this->tipo_documento)?->label() ?? '';
                     break;
-                // case 'editorial_id':
-                //     $data['editorial_id'] = $this->editorial_id;
-                //     break;
+                case 'user_id':
+                    $data['user_id'] = $this->user_id;
+                    $data['ingresado_por:'] = $this->user?->name ?? '';
+                    break;
                 default:
                     $data[$field] = $value;
             }

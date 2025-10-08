@@ -17,6 +17,8 @@ return new class extends Migration
             $table->date('fecha_publicacion');
             $table->text('descripcion_fisica')->nullable();
             $table->text('notas')->nullable();
+            $table->unsignedBigInteger('user_id')->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
             $table->unsignedBigInteger('editorial_id')->index();
             $table->foreign('editorial_id')->references('id')->on('editorials')->onDelete('restrict');
 

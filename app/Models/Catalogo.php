@@ -21,7 +21,8 @@ class Catalogo extends Model
         'fecha_publicacion',
         'descripcion_fisica',
         'notas',
-        'editorial_id'
+        'editorial_id',
+        'user_id'
     ];
 
 
@@ -38,5 +39,10 @@ class Catalogo extends Model
     public function ejemplares(): HasMany
     {
         return $this->hasMany(Ejemplar::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

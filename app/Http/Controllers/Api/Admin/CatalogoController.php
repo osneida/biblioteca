@@ -9,6 +9,7 @@ use App\Models\Catalogo;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CatalogoController extends Controller implements HasMiddleware
@@ -45,7 +46,8 @@ class CatalogoController extends Controller implements HasMiddleware
                 'subtitulo' => $request['subtitulo'],
                 'fecha_publicacion' => $request['fecha_publicacion'],
                 'descripcion_fisica' => $request['descripcion_fisica'],
-                'notas' => $request['notas']
+                'notas' => $request['notas'],
+                'user_id' => Auth::id()   //usuario autenticado
             ];
 
             if ($request->filled('isbn')) {
