@@ -1,0 +1,154 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API Laravel Documentation",
+        "description": "Project YouTube API Laravel 11 Documentation",
+        "contact": {
+            "email": "your-email@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/catalogos": {
+            "get": {
+                "tags": [
+                    "Catalogos"
+                ],
+                "summary": "Listar catálogos",
+                "operationId": "15a7ca6c7669778ec928198e2009d4d0",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página para paginación",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Listado de catálogos"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Catalogos"
+                ],
+                "summary": "Crear un catálogo",
+                "operationId": "a54e8d2147b482d86380e825cbdfdbf6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Catálogo creado"
+                    },
+                    "400": {
+                        "description": "Solicitud incorrecta"
+                    }
+                }
+            }
+        },
+        "/catalogos/{catalogo}": {
+            "get": {
+                "tags": [
+                    "Catalogos"
+                ],
+                "summary": "Obtener un catálogo por id",
+                "operationId": "9361eeed98467213efa21d5f839399c5",
+                "parameters": [
+                    {
+                        "name": "catalogo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Catálogo encontrado"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Catalogos"
+                ],
+                "summary": "Actualizar un catálogo",
+                "operationId": "bdb4aa50031fdedd5b93eaa54f2ffd0e",
+                "parameters": [
+                    {
+                        "name": "catalogo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Catálogo actualizado"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Catalogos"
+                ],
+                "summary": "Eliminar un catálogo",
+                "operationId": "14195e71cdb668de78419256bb11b384",
+                "parameters": [
+                    {
+                        "name": "catalogo",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Eliminado"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Catalogos",
+            "description": "Catalogos"
+        }
+    ]
+}

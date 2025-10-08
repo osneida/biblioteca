@@ -12,6 +12,16 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * @OA\Info(
+ *     title="API Laravel Documentation",
+ *     version="1.0.0",
+ *     description="Project YouTube API Laravel 11 Documentation",
+ *     @OA\Contact(
+ *         email="your-email@gmail.com"
+ *     )
+ * )
+ */
 class CatalogoController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
@@ -21,6 +31,20 @@ class CatalogoController extends Controller implements HasMiddleware
         ];
     }
 
+    /**
+     * @OA\Get(
+     *   path="/catalogos",
+     *   tags={"Catalogos"},
+     *   summary="Listar catálogos",
+     *   @OA\Parameter(
+     *     name="page",
+     *     in="query",
+     *     description="Número de página para paginación",
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(response=200, description="Listado de catálogos")
+     * )
+     */
     public function index()
     {
         $catalogos = Catalogo::query()
@@ -30,6 +54,20 @@ class CatalogoController extends Controller implements HasMiddleware
         return CatalogoResource::collection($catalogos);
     }
 
+
+    /**
+     * @OA\Post(
+     *   path="/catalogos",
+     *   tags={"Catalogos"},
+     *   summary="Crear un catálogo",
+     *   @OA\RequestBody(
+     *     required=true,
+     *     @OA\JsonContent(type="object")
+     *   ),
+     *   @OA\Response(response=201, description="Catálogo creado"),
+     *   @OA\Response(response=400, description="Solicitud incorrecta")
+     * )
+     */
     public function store(CatalogoRequest $request)
     {
         try {
@@ -106,6 +144,22 @@ class CatalogoController extends Controller implements HasMiddleware
         }
     }
 
+
+    /**
+     * @OA\Get(
+     *   path="/catalogos/{catalogo}",
+     *   tags={"Catalogos"},
+     *   summary="Obtener un catálogo por id",
+     *   @OA\Parameter(
+     *     name="catalogo",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(response=200, description="Catálogo encontrado"),
+     *   @OA\Response(response=404, description="No encontrado")
+     * )
+     */
     public function show(Catalogo $catalogo)
     {
         try {
@@ -129,6 +183,23 @@ class CatalogoController extends Controller implements HasMiddleware
         }
     }
 
+
+    /**
+     * @OA\Put(
+     *   path="/catalogos/{catalogo}",
+     *   tags={"Catalogos"},
+     *   summary="Actualizar un catálogo",
+     *   @OA\Parameter(
+     *     name="catalogo",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\RequestBody(@OA\JsonContent(type="object")),
+     *   @OA\Response(response=200, description="Catálogo actualizado"),
+     *   @OA\Response(response=404, description="No encontrado")
+     * )
+     */
     public function update(CatalogoRequest $request, Catalogo $catalogo)
     {
         try {
@@ -150,6 +221,22 @@ class CatalogoController extends Controller implements HasMiddleware
         }
     }
 
+
+    /**
+     * @OA\Delete(
+     *   path="/catalogos/{catalogo}",
+     *   tags={"Catalogos"},
+     *   summary="Eliminar un catálogo",
+     *   @OA\Parameter(
+     *     name="catalogo",
+     *     in="path",
+     *     required=true,
+     *     @OA\Schema(type="integer")
+     *   ),
+     *   @OA\Response(response=204, description="Eliminado"),
+     *   @OA\Response(response=404, description="No encontrado")
+     * )
+     */
     public function destroy(Catalogo $catalogo)
     {
         try {
