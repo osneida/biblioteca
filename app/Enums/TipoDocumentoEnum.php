@@ -26,4 +26,12 @@ enum TipoDocumentoEnum: int
             self::Música    => __('Música'),
         };
     }
+
+    /**
+     * Return an array of enum scalar values (e.g. ['V', 'E']).
+     */
+    public static function values(): array
+    {
+        return array_map(fn(TipoDocumentoEnum $c) => $c->value, self::cases());
+    }
 }

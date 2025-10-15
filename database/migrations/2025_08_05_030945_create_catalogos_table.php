@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('catalogos', function (Blueprint $table) {
             $table->id();
-            $table->date('fecha_ingreso');
             $table->integer('tipo_documento'); //, array_column(TipoDocumentoEnum::cases(), 'name')); //solo los tipos de documentos que se encuentra en TipoDocumentoEnum
             $table->string('isbn', 50)->unique()->nullable();
             $table->string('titulo');
@@ -18,6 +17,8 @@ return new class extends Migration
             $table->date('fecha_publicacion');
             $table->text('descripcion_fisica')->nullable();
             $table->text('notas')->nullable();
+            $table->unsignedBigInteger('user_id')->index();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
             $table->unsignedBigInteger('editorial_id')->index();
             $table->foreign('editorial_id')->references('id')->on('editorials')->onDelete('restrict');
 
