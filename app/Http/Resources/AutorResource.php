@@ -8,6 +8,23 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AutorResource extends JsonResource
 {
+    /**
+     * Comentario para la documentación Scramble. NO FUNCIONA
+     *
+     * @return {
+     * data: [
+     *   {
+     *       "id": 1,
+     *       "nombre": "Autor 1",
+     *       "nacionalidad": "E",
+     *       "nacionalidad_label": "Extranjero",
+     *       "fecha_nacimiento": "1950-11-26",
+     *       "fecha_fallecimiento": null,
+     *       "biografia": "esta es la biografia de este Autor 1"
+     *   },
+     *  ]
+     *  }
+     */
     public function toArray(Request $request): array
     {
         // Solo mostrar los atributos realmente cargados (por SelectScope),
