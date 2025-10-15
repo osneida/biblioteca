@@ -5,7 +5,6 @@ namespace App\Http\Requests;
 use App\Enums\NacionalidadEnum;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use App\Enums\NacionalidadEnum;
 
 class AutorRequest extends FormRequest
 {
