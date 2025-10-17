@@ -9,13 +9,14 @@ use App\Models\Autor;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
 class AutorController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:api', except: ['index', 'show']),
+            new Middleware('auth:api') //, except: ['index', 'show']),
         ];
     }
     /**
@@ -40,7 +41,7 @@ class AutorController extends Controller implements HasMiddleware
      */
     public function index()
     {
-
+        Gate::authorize('autor.index');
         $autores = Autor::query()
             ->applyApiFeatures()
             ->getOrPaginate();
@@ -59,6 +60,7 @@ class AutorController extends Controller implements HasMiddleware
      */
     public function store(AutorRequest $request)
     {
+        Gate::authorize('autor.store');
         try {
             $autor = Autor::create($request->all());
             return (new AutorResource($autor))->additional([
@@ -90,7 +92,7 @@ class AutorController extends Controller implements HasMiddleware
      */
     public function show(Autor $autore)
     {
-
+        Gate::authorize('autor.show');
         $query = Autor::query();
         // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
         $query->where($autore->getKeyName(), $autore->getKey());
@@ -114,6 +116,7 @@ class AutorController extends Controller implements HasMiddleware
      */
     public function update(AutorRequest $request, Autor $autore)
     {
+        Gate::authorize('autor.update');
         try {
             $autore->update($request->all());
             return (new AutorResource($autore))->additional([
@@ -137,6 +140,7 @@ class AutorController extends Controller implements HasMiddleware
      */
     public function destroy(Autor $autore)
     {
+        Gate::authorize('autor.destroy');
         try {
             // Verificar el autor tiene catalogos asociados
             if ($autore->catalogos()->exists()) {

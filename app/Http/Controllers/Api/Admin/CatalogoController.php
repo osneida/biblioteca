@@ -11,18 +11,20 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class CatalogoController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:api', except: ['index', 'show']),
+            new Middleware('auth:api'), //, except: ['index', 'show']
         ];
     }
 
     public function index()
     {
+        Gate::authorize('catalogo.index');
         $catalogos = Catalogo::query()
             ->applyApiFeatures()
             ->getOrPaginate();
@@ -32,6 +34,8 @@ class CatalogoController extends Controller implements HasMiddleware
 
     public function store(CatalogoRequest $request)
     {
+        Gate::authorize('catalogo.store');
+
         try {
             DB::beginTransaction();
 
@@ -108,29 +112,30 @@ class CatalogoController extends Controller implements HasMiddleware
 
     public function show(Catalogo $catalogo)
     {
-        try {
-            $query = Catalogo::query();
+        Gate::authorize('catalogo.show');
 
-            // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
-            $query->where($catalogo->getKeyName(), $catalogo->getKey());
-            // Aplicar los mismos scopes que en index (select, include, filters, sort)
-            $query->applyApiFeatures();
+        $query = Catalogo::query();
 
-            // Obtener directamente el primer resultado o lanzar ModelNotFoundException
-            $catalogo = $query->firstOrFail();
+        // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
+        $query->where($catalogo->getKeyName(), $catalogo->getKey());
+        // Aplicar los mismos scopes que en index (select, include, filters, sort)
+        $query->applyApiFeatures();
 
-            return new CatalogoResource($catalogo);
-        } catch (\Throwable $th) {
-            // Si es una excepción de tipo ModelNotFound, devolver 404 con mensaje personalizado.
-            // Para cualquier otra excepción, también devolvemos 404 aquí para no filtrar detalles internos.
+        // Obtener directamente el primer resultado o lanzar ModelNotFoundException
+        $catalogo = $query->firstOrFail();
+        if (!$catalogo) {
             return response()->json([
                 'message' => 'No se encontró el documento solicitado.'
             ], 404);
         }
+
+        return new CatalogoResource($catalogo);
     }
 
     public function update(CatalogoRequest $request, Catalogo $catalogo)
     {
+        Gate::authorize('catalogo.update');
+
         try {
             $data = $request->all();
             if (!$catalogo->isDirty($data)) {
@@ -152,6 +157,7 @@ class CatalogoController extends Controller implements HasMiddleware
 
     public function destroy(Catalogo $catalogo)
     {
+        Gate::authorize('catalogo.destroy');
         try {
             $catalogo->delete();
             return response()->noContent(); // 204 sin cuerpo

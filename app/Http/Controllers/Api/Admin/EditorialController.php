@@ -9,18 +9,21 @@ use App\Models\Editorial;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Gate;
 
 class EditorialController extends Controller implements HasMiddleware
 {
     public static function middleware(): array
     {
         return [
-            new Middleware('auth:api', except: ['index', 'show']),
+            new Middleware('auth:api') //, except: ['index', 'show']),
         ];
     }
 
     public function index()
     {
+        Gate::authorize('editorial.index');
+
         $editoriales = Editorial::query()
             ->applyApiFeatures()
             ->getOrPaginate();
@@ -30,6 +33,7 @@ class EditorialController extends Controller implements HasMiddleware
 
     public function store(EditorialRequest $request)
     {
+        Gate::authorize('editorial.store');
         try {
             $editorial = Editorial::create($request->all());
             if (!$editorial) {
@@ -50,6 +54,8 @@ class EditorialController extends Controller implements HasMiddleware
 
     public function show(Editorial $editoriale)
     {
+        Gate::authorize('editorial.show');
+
         $query = Editorial::query();
         // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
         $query->where($editoriale->getKeyName(), $editoriale->getKey());
@@ -64,6 +70,8 @@ class EditorialController extends Controller implements HasMiddleware
 
     public function update(EditorialRequest $request, Editorial $editoriale)
     {
+        Gate::authorize('editorial.update');
+
         try {
             $data = $request->all();
             $editoriale->update($data);
@@ -80,6 +88,7 @@ class EditorialController extends Controller implements HasMiddleware
 
     public function destroy(Editorial $editoriale)
     {
+        Gate::authorize('editorial.destroy');
         try {
             // Verificar si la editorial tiene catálogos asociados
             if ($editoriale->catalogos()->exists()) {
