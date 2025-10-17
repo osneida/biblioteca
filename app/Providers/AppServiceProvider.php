@@ -37,5 +37,9 @@ class AppServiceProvider extends ServiceProvider
             // aqui puedes definir quien puede ver la documentacion de la api
             return true;
         });
+
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('catalogador') ? true : null;
+        });
     }
 }

@@ -48,7 +48,13 @@ class RoleSeeder extends Seeder
             'guard_name' => 'api',
         ]);
 
-        $permissions = Permission::all();
-        $catalogador->syncPermissions($permissions);
+        // se creo en AppServiceProvider Gate::before
+        //para que tenga todos los permisos
+        //    Gate::before(function ($user, $ability) {
+        //         return $user->hasRole('catalogador') ? true : null;
+        //     });
+
+        // $permissions = Permission::all();
+        // $catalogador->syncPermissions($permissions);
     }
 }
