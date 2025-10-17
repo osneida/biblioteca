@@ -14,7 +14,7 @@ return new class extends Migration
             $table->string('isbn', 50)->unique()->nullable();
             $table->string('titulo');
             $table->string('subtitulo')->nullable();
-            $table->date('fecha_publicacion');
+            $table->string('ano_publicacion', 4);
             $table->text('descripcion_fisica')->nullable();
             $table->text('notas')->nullable();
             $table->unsignedBigInteger('user_id')->index();

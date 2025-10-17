@@ -34,7 +34,7 @@ class CatalogoShowTest extends TestCase
             'isbn' => '1234567890',
             'titulo' => 'Titulo Test',
             'subtitulo' => null,
-            'fecha_publicacion' => now()->toDateString(),
+            'ano_publicacion' => '2020', //now()->year(), // now()->toDateString(),
             'descripcion_fisica' => null,
             'notas' => null,
             'editorial_id' => $editorial->id,

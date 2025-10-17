@@ -48,7 +48,7 @@ class CatalogoController extends Controller implements HasMiddleware
                 'editorial_id' => $request['editorial_id'],
                 'titulo' => $request['titulo'],
                 'subtitulo' => $request['subtitulo'],
-                'fecha_publicacion' => $request['fecha_publicacion'],
+                'ano_publicacion' => $request['ano_publicacion'],
                 'descripcion_fisica' => $request['descripcion_fisica'],
                 'notas' => $request['notas'],
                 'user_id' => Auth::id()   //usuario autenticado

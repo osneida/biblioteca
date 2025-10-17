@@ -60,7 +60,7 @@ class CatalogoRequest extends FormRequest
             'titulo'            => 'required|string|max:255',
             'subtitulo'         => 'nullable|string|max:255',
             'tipo_documento'    => 'required|integer|min:1|' . Rule::in(TipoDocumentoEnum::values()),
-            'fecha_publicacion' => 'nullable|date',
+            'ano_publicacion'   => 'nullable|string|size:4',
             'descripcion_fisica' => 'nullable|string|max:255',
             'notas'             => 'nullable|string',
             'isbn'              => $isbnRule,

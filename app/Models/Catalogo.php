@@ -18,7 +18,7 @@ class Catalogo extends Model
         'isbn',
         'titulo',
         'subtitulo',
-        'fecha_publicacion',
+        'ano_publicacion',
         'descripcion_fisica',
         'notas',
         'editorial_id',
