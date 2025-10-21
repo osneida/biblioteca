@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('editorials', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->unique()->comment('Nombre de la editorial');
+            $table->string('nombre', 100)->unique()->comment('Nombre de la editorial');
             $table->string('direccion')->nullable()->comment('Dirección de la editorial');
             $table->timestamps();
         });

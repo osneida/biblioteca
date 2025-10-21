@@ -18,7 +18,7 @@ class EditorialRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre'    => 'required|string|min:3|max:100|unique:editorials,nombre,except,id',
+            'nombre'    => 'required|string|min:3|max:100|unique:editorials,nombre,' . $this->editoriale?->id,
             'direccion' => 'nullable|string|min:3|max:255',
         ];
     }

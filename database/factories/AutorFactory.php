@@ -14,7 +14,7 @@ class AutorFactory extends Factory
             'nacionalidad' => 'V',
             'fecha_nacimiento' => $this->faker->date(),
             'fecha_fallecimiento' => null,
-            'biografia' => $this->faker->text(200),
+            'biografia' => $this->faker->text(500),
         ];
     }
 }
