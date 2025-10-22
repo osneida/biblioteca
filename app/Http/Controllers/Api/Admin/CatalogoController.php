@@ -87,12 +87,28 @@ class CatalogoController extends Controller implements HasMiddleware
             // Código: año + mes + correlativo de 4 dígitos
             $codigo = $año . $mes . str_pad($correlativo, 4, '0', STR_PAD_LEFT);
 
-            \App\Models\Ejemplar::create([
-                'fecha_ingreso' => $request['fecha_ingreso'],
-                'catalogo_id' => $catalogo_id,
-                'nro_ejemplar' => $nro_ejemplar,
-                'codigo' => $codigo,
-            ]);
+            if ($request['cantidad_de_ejemplares']) {
+                $cantidad_de_ejemplares =  $request['cantidad_de_ejemplares'];
+                for ($i = 1; $i <= $cantidad_de_ejemplares; $i++) {
+                    \App\Models\Ejemplar::create([
+                        'fecha_ingreso' => $request['fecha_ingreso'],
+                        'catalogo_id' => $catalogo_id,
+                        'nro_ejemplar' => $nro_ejemplar,
+                        'codigo' => $codigo,
+                    ]);
+                    $nro_ejemplar++;
+                    $correlativo++;
+                    $codigo = $año . $mes . str_pad($correlativo, 4, '0', STR_PAD_LEFT);
+                }
+            } else {
+                \App\Models\Ejemplar::create([
+                    'fecha_ingreso' => $request['fecha_ingreso'],
+                    'catalogo_id' => $catalogo_id,
+                    'nro_ejemplar' => $nro_ejemplar,
+                    'codigo' => $codigo,
+                ]);
+            }
+
 
             // Sincronizar autores
             $catalogo->autores()->sync($request->input('autores', []));
@@ -138,11 +154,6 @@ class CatalogoController extends Controller implements HasMiddleware
 
         try {
             $data = $request->all();
-            if (!$catalogo->isDirty($data)) {
-                return response()->json([
-                    'message' => 'No hubo cambios para actualizar.'
-                ], 200);
-            }
             $catalogo->update($data);
             return (new CatalogoResource($catalogo))->additional([
                 'message' => 'success',
