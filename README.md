@@ -1,12 +1,16 @@
 # Sistema de Gestión Bibliotecaria (API)
 
-<p align="center">![Captura de la aplicación](public/img/sib.jpg)</p>
+<p align="center"> 
+<img src="./public/img/sib.jpg" width="400" alt="Servicios Informáticos Bordones">
+</p>
+<p align="center"><img  ![Captura de la aplicación]()</p>
 
-## API RESTful desarrollada con Laravel para la gestión bibliotecaria. Esta API utiliza JWT para autenticación y ofrece endpoints para administrar catálogos, autores, editoriales, ejemplares, usuarios y permisos.
+API RESTful desarrollada con Laravel para la gestión bibliotecaria. Esta API utiliza JWT para autenticación y ofrece endpoints para administrar catálogos, autores, editoriales, ejemplares, usuarios y permisos.
 
 **Módulos**
 
-<p align="center">![Captura de la aplicación](public/img/modulos.jpg)</p>
+<p align="center"><img src="./public/img/modulos.jpg" width="400" alt="módulos">
+</p>
 
 **Principales características**
 
