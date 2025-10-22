@@ -12,8 +12,8 @@ API RESTful desarrollada con Laravel para la gestión bibliotecaria. Esta API ut
 <p align="center"><img src="./public/img/modulos.jpg" width="400" alt="módulos">
 </p>
 
-<a href="https://github.com/osneida/biblioteca/wiki"> Documentación de la Api <a>
-<a href="https://github.com/users/osneida/projects/5/views/2"> Proyecto de la Api <a>
+<p align="left"><a href="https://github.com/osneida/biblioteca/wiki"> Documentación de la Api <a></p>
+<p align="left"><a href="https://github.com/users/osneida/projects/5/views/2"> Proyecto de la Api <a></p>
 
 ---
 
