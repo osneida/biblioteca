@@ -1,67 +1,91 @@
-Importante
+...existing code...
 
-En las relaciones uno a muchos cuando se usa select en la url y también include debe obligatoriamente incluirse el id en el select, para que muestre la relación.
+# Sistema de Gestión Bibliotecaria (API)
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+API RESTful desarrollada con Laravel para la gestión bibliotecaria. Esta API utiliza JWT para autenticación y ofrece endpoints para administrar catálogos, autores, editoriales, ejemplares, usuarios y permisos.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Principales características
 
-## About Laravel
+-   Autenticación JWT.
+-   Paginación y filtros avanzados (select, include, sort, filter, in/not_in, like/not_like).
+-   Roles y permisos con Spatie.
+-   Tests automatizados con PHPUnit.
+-   Documentación automática (Scramble).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Requisitos
 
--   [Simple, fast routing engine](https://laravel.com/docs/routing).
--   [Powerful dependency injection container](https://laravel.com/docs/container).
--   Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
--   Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
--   Database agnostic [schema migrations](https://laravel.com/docs/migrations).
--   [Robust background job processing](https://laravel.com/docs/queues).
--   [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-   PHP 8.2+
+-   Composer
+-   Node.js >= 18 (para assets)
+-   Base de datos compatible (MySQL, SQLite, PostgreSQL, etc.)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Instalación rápida
 
-## Learning Laravel
+1. Clona el repositorio:
+   git clone https://github.com/osneida/biblioteca.git
+2. Instala dependencias PHP:
+   composer install
+3. Instala dependencias JS:
+   npm install
+4. Copia el entorno y genera claves:
+   cp .env.example .env
+   php artisan key:generate
+5. Configura la base de datos en .env.
+6. Ejecuta migraciones y seeders:
+   php artisan migrate --seed
+7. Levanta la aplicación (desarrollo):
+   composer run dev
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Configuración importante
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   JWT: la configuración del proveedor JWT está en [config/jwt.php](config/jwt.php). Para tests recuerda añadir `JWT_SECRET` en `.env.testing`. El trait de test provee un comando sugerido para generar el secreto en `.env.testing`: consulta [`App\Trait\Test\AuthenticatesAsCataloger`](app/Trait/Test/AuthenticatesAsCataloger.php).
+-   Documentación de la API: la configuración de Scramble se encuentra en [config/scramble.php](config/scramble.php).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Autenticación
 
-## Laravel Sponsors
+-   La API usa tokens JWT. Para peticiones autenticadas envía la cabecera:
+    Authorization: Bearer <token>
+-   En pruebas y ejemplos ya se crea un usuario de prueba mediante seeders/tests (ver tests).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Ejemplos de uso de filtros y endpoints
 
-### Premium Partners
+-   Listado con includes y filtros:
+    GET /api/v1/catalogos?include=autores,editorial&filters[id][in]=5,6,7
+-   Búsqueda por título (LIKE):
+    GET /api/v1/catalogos?filters[titulo][like]=libro
+-   Detalle con relaciones:
+    GET /api/v1/catalogos/16?include=ejemplares,autores&select=id,titulo
 
--   **[Vehikl](https://vehikl.com)**
--   **[Tighten Co.](https://tighten.co)**
--   **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
--   **[64 Robots](https://64robots.com)**
--   **[Curotec](https://www.curotec.com/services/technologies/laravel)**
--   **[DevSquad](https://devsquad.com/hire-laravel-developers)**
--   **[Redberry](https://redberry.international/laravel-development)**
--   **[Active Logic](https://activelogic.com)**
+-   Ejemplos adicionales y explicaciones están en la documentación del proyecto y en los tests: [tests/Feature/EditorialTest.php](tests/Feature/EditorialTest.php) y [tests/Feature/AutorTest.php](tests/Feature/AutorTest.php).
 
-## Contributing
+Pruebas
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   Ejecutar tests:
+    ./vendor/bin/phpunit
+-   Asegúrate de tener `.env.testing` configurado, incluyendo `JWT_SECRET` si los tests usan JWT.
 
-## Code of Conduct
+Scripts útiles (desde composer.json)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+-   Recomendado revisar dependencias y scripts en [composer.json](composer.json).
 
-## Security Vulnerabilities
+Buenas prácticas y contribución
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+-   Sigue el formato PSR-12.
+-   Añade tests para nuevas funcionalidades.
+-   Abre un issue antes de una PR grande; las PRs pequeñas y enfocadas se revisan más rápido.
 
-## License
+Contacto y documentación
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-   Documentación en el repositorio y Wiki del proyecto.
+-   Para la exportación automática de la especificación OpenAPI consulta la configuración en [config/scramble.php](config/scramble.php).
 
-# biblioteca
+Licencia
+
+-   MIT (ver composer.json).
+
+Notas rápidas
+
+-   Si trabajas con tests que requieren autenticación JWT revisa [`App\Trait\Test\AuthenticatesAsCataloger`](app/Trait/Test/AuthenticatesAsCataloger.php) para el flujo de creación de usuario y generación de token.
+-   Para cambiar proveedores JWT revisa [config/jwt.php](config/jwt.php).
+
+...existing code...
