@@ -22,6 +22,34 @@ class CatalogoController extends Controller implements HasMiddleware
         ];
     }
 
+    /**
+     * Listado de Catalogos
+     *
+     * Muestra el listado de catalogos registrados en el sistema.
+     * Se pueden incluir relaciones y aplicar filtros a través de parámetros en la consulta. <br>
+     * <b>Filtros disponibles:</b>
+     * - <b>select</b>: Permite seleccionar campos específicos del autor. Ejemplo: `select=id,nombre` <br>
+     * - <b>include</b>: Permite incluir relaciones del autor. Ejemplo: `include=catalogos` <br>
+     * - <b>sort</b>: Permite ordenar los resultados. Ejemplo: `sort=-fecha_nacimiento` | `sort=-campo` ordena descendente `sort=campo` ordena ascendente<br>
+     * - <b>filter</b>: Permite filtrar los resultados por campos específicos. Ejemplo: `filter[nacionalidad]=E` <br>
+     * - <b>page & per_page</b>: Permite paginar los resultados. Ejemplo: `page=2&per_page=10` <br>
+     * <b>Ejemplos de uso:</b>
+     * - <b>index</b><br>
+     * -  api/v1/catalogos?include=editorial,ejemplares,autores<br>
+     * -  api/v1/catalogos?include=editorial,ejemplares,autores&sort=-id&select=id,titulo,isbn<br>
+     * -  api/v1/catalogos?sort=-id<br>
+     * -  api/v1/catalogos?include=autores,editorial&filters[isbn]=Libro isbn<br>
+     * -  api/v1/catalogos?include=autores,editorial&filters[id][in][]=5&filters[id][in][]=6<br>
+     * -  api/v1/catalogos?include=autores,editorial&filters[id][in]=5,6,7,8<br>
+     * -  api/v1/catalogos?include=autores,editorial&filters[id][>=]=8<br>
+     * -  api/v1/catalogos?include=ejemplares&filters[titulo][like]=libro<br>
+     * -  api/v1/catalogos?filters[titulo][not_like]=libro<br>
+     * -  <b>show</b><br>
+     * -  api/v1/catalogos/16?include=ejemplares,autores<br>
+     * - api/v1/catalogos/16?include=ejemplares,autores&select=id,titulo,tipo_documento<br>
+     * -  api/v1/catalogos/11?include=editorial,ejemplares,autores<br>
+     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     */
     public function index()
     {
         Gate::authorize('catalogo.index');
