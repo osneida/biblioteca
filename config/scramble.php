@@ -39,7 +39,22 @@ return [
             <br> <b>Filtros disponibles para el Detalle (show) :</b>
        <br> - <b>include</b>: Permite incluir relaciones del autor. Ejemplo: `include=catalogos` <br>
             - <b>select</b>: Permite seleccionar campos específicos del autor. Ejemplo: `select=id,nombre`
-
+            <br><br>
+       <br><b>Ejemplos de filtros y endpoints:</b><br>
+        <b>index</b><br>
+            - api/v1/catalogos?include=editorial,ejemplares,autores<br>
+            - api/v1/catalogos?include=editorial,ejemplares,autores&sort=-id&select=id,titulo,isbn<br>
+            - api/v1/catalogos?sort=-id<br>
+            - api/v1/catalogos?include=autores,editorial&filters[isbn]=Libro isbn<br>
+            - api/v1/catalogos?include=autores,editorial&filters[id][in][]=5&filters[id][in][]=6<br>
+            - api/v1/catalogos?include=autores,editorial&filters[id][in]=5,6,7,8<br>
+            - api/v1/catalogos?include=autores,editorial&filters[id][>=]=8<br>
+            - api/v1/catalogos?include=ejemplares&filters[titulo][like]=libro<br>
+            - api/v1/catalogos?filters[titulo][not_like]=libro<br>
+        <b>show</b><br>
+            - api/v1/catalogos/16?include=ejemplares,autores<br>
+            - api/v1/catalogos/16?include=ejemplares,autores&select=id,titulo,tipo_documento<br>
+            - api/v1/catalogos/11?include=editorial,ejemplares,autores<br>
            '
     ],
 
