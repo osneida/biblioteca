@@ -23,13 +23,13 @@ class CatalogoController extends Controller implements HasMiddleware
     }
 
     /**
-     * Listado de Catalogos
+     * Listado de Catálogos
      *
-     * Muestra el listado de catalogos registrados en el sistema.
+     * Muestra el listado de catálogos registrados en el sistema.
      * Se pueden incluir relaciones y aplicar filtros a través de parámetros en la consulta. <br>
      * <b>Filtros disponibles:</b>
-     * - <b>select</b>: Permite seleccionar campos específicos del autor. Ejemplo: `select=id,nombre` <br>
-     * - <b>include</b>: Permite incluir relaciones del autor. Ejemplo: `include=catalogos` <br>
+     * - <b>select</b>: Permite seleccionar campos específicos. Ejemplo: `select=id,nombre` <br>
+     * - <b>include</b>: Permite incluir relaciones del Modelo. Ejemplo: `include=catalogos` <br>
      * - <b>sort</b>: Permite ordenar los resultados. Ejemplo: `sort=-fecha_nacimiento` | `sort=-campo` ordena descendente `sort=campo` ordena ascendente<br>
      * - <b>filter</b>: Permite filtrar los resultados por campos específicos. Ejemplo: `filter[nacionalidad]=E` <br>
      * - <b>page & per_page</b>: Permite paginar los resultados. Ejemplo: `page=2&per_page=10` <br>
@@ -60,6 +60,15 @@ class CatalogoController extends Controller implements HasMiddleware
         return CatalogoResource::collection($catalogos);
     }
 
+    /**
+     * Crear Catálogo
+     *
+     * Permite crear un nuevo documento en el sistema.
+     *
+     * @param  \App\Http\Requests\CatalogoRequest  $request
+     * @return JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function store(CatalogoRequest $request)
     {
         Gate::authorize('catalogo.store');
@@ -154,6 +163,22 @@ class CatalogoController extends Controller implements HasMiddleware
         }
     }
 
+    /**
+     * Detalles del Catálogo:
+     *
+     * Muestra los detalles de un catálogo específico identificado por su ID.
+     *
+     * Se pueden incluir relaciones y aplicar filtros a través de parámetros en la consulta. <br>
+     * <b>Filtros disponibles:</b>
+     * - <b>select</b>: Permite seleccionar campos específicos del Modelo. Ejemplo: `select=id,nombre` <br>
+     * - <b>include</b>: Permite incluir relaciones del Modelo. Ejemplo: `include=ejemplares` <br>
+     * <b>Ejemplos de uso:</b>
+     * - api/v1/catalogos/1?select=id,nombre <br>
+     * - api/v1/catalogos/1?select=id,nombre&include=ejemplares <br>
+     *
+     * @param  \App\Models\Catalogo $catalogo
+     * @return JsonResponse
+     */
     public function show(Catalogo $catalogo)
     {
         Gate::authorize('catalogo.show');
@@ -176,6 +201,15 @@ class CatalogoController extends Controller implements HasMiddleware
         return new CatalogoResource($catalogo);
     }
 
+    /**
+     * Actualizar Catálogo
+     *
+     * Permite actualizar los datos de un catálogo existente en el sistema.
+     * @param  \App\Http\Requests\CatalogoRequest  $request
+     * @param  \App\Models\Catalogo $catalogo
+     * @return JsonResponse
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function update(CatalogoRequest $request, Catalogo $catalogo)
     {
         Gate::authorize('catalogo.update');
@@ -194,6 +228,13 @@ class CatalogoController extends Controller implements HasMiddleware
         }
     }
 
+    /**
+     * Eliminar Catálogo
+     *
+     * Permite eliminar un catálogo, sus autores y ejemplares en el sistema.
+     * @param  \App\Models\Catalogo $catalogo
+     * @return JsonResponse
+     */
     public function destroy(Catalogo $catalogo)
     {
         Gate::authorize('catalogo.destroy');

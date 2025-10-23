@@ -7,6 +7,13 @@ use Illuminate\Http\Request;
 
 class EnumController extends Controller
 {
+    /**
+     * Tipo de Documentos
+     *
+     * Tipos de documentos que puede tener un catálogo
+     * @param  \App\Enums\TipoDocumentoEnum::cases()
+     * @return TipoDocumentoEnum
+     */
     public function tiposDocumento()
     {
         $tipos = [];
@@ -19,6 +26,13 @@ class EnumController extends Controller
         return response()->json(data: ['data' => $tipos]);
     }
 
+    /**
+     * Estatus de la Disponibilidad
+     *
+     * Disponiblilidad de los documentos
+     * @param  \App\Enums\EstatusDisponibilidadEnum::cases()
+     * @return EstatusDisponibilidadEnum
+     */
     public function estatusDisponibilidad()
     {
         $estatus = [];
@@ -31,6 +45,13 @@ class EnumController extends Controller
         return response()->json(data: ['data' => $estatus]);
     }
 
+    /**
+     * Nacionalidades
+     *
+     * Nacionalidades de los Autores
+     * @param  \App\Enums\NacionalidadEnum::cases()
+     * @return NacionalidadEnum
+     */
     public function nacionalidades()
     {
         $nacionalidades = [];

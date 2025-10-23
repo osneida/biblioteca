@@ -51,20 +51,19 @@ class CatalogoRequest extends FormRequest
         return [
             'titulo'            => 'required|string|max:255',
             'subtitulo'         => 'nullable|string|max:255',
+            //tipo_documento: Libro = 1, Revista = 2, Novela = 3, Tesis = 4, Pretesis = 5, Periódico = 6, Película  = 7, Música = 8;
             'tipo_documento'    => 'required|integer|min:1|' . Rule::in(TipoDocumentoEnum::values()),
             'ano_publicacion'   => 'nullable|string|size:4',
             'descripcion_fisica' => 'nullable|string|max:255',
             'notas'             => 'nullable|string',
-            'isbn'              => 'nullable|string|max:13|unique:catalogos,isbn,' . $this->catalogo?->id,  //$isbnRule,
+            'isbn'              => 'nullable|string|max:13|unique:catalogos,isbn,' . $this->catalogo?->id,
             'editorial_id'      => 'required|exists:editorials,id',
             'autores'           => 'required|array|min:1',
             'autores.*'         => 'exists:autors,id',
-            'fecha_ingreso'     => 'required|date|before_or_equal:today', //para usar en ejmplares
-
-            // 'ejemplares' => 'nullable|array|min:1',
-            // 'ejemplares.*.nro_ejemplar' => 'required|string|max:50',
-            // 'ejemplares.*.codigo' => 'required|string|max:50|unique:ejemplares,codigo,' . ($this->route('catalogo') ? $this->route('catalogo') : 'NULL') . ',catalogo_id',
-            // 'ejemplares.*.estatus' => 'required|in:disponible,no_disponible,reservado,prestado',
+            //fecha_ingreso: para usar en ejmplares.
+            'fecha_ingreso'     => 'required|date|before_or_equal:today',
+            //cantidad_de_ejemplares: crea la cantidad de ejemplares indicada, sino se indica crea un ejemplar
+            'cantidad_de_ejemplares' => 'nullable|integer',
         ];
     }
 }
