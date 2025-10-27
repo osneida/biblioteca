@@ -18,7 +18,7 @@ class SortScope implements Scope
         }
 
         // -------------------------------------------------------------------
-        // FIX CRÍTICO: Evitar fuga del Sort a las subconsultas de relaciones.
+        // Evitar fuga del Sort a las subconsultas de relaciones.
         // -------------------------------------------------------------------
         // 1. Obtener la tabla del modelo base (ej: 'editoriales').
         $modelTableName = $model->getTable();

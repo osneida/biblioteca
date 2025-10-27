@@ -12,7 +12,7 @@ class SelectScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         // -------------------------------------------------------------------
-        // 🔥 FIX CRÍTICO: Autodefensa para evitar la fuga a subconsultas (Eager Loading).
+        // Autodefensa para evitar la fuga a subconsultas (Eager Loading).
         // Si la tabla actual NO es la tabla del modelo base, ignoramos la aplicación.
         $modelTableName = $model->getTable();
         $currentQueryTable = $builder->getQuery()->from;
@@ -34,12 +34,6 @@ class SelectScope implements Scope
 
         // 2. Incluir siempre la clave primaria
         $validFields[] = $model->getKeyName();
-
-        // // 3. Incluir las columnas de timestamps si existen
-        // if ($model->usesTimestamps()) {
-        //     $validFields[] = $model->getCreatedAtColumn();
-        //     $validFields[] = $model->getUpdatedAtColumn();
-        // }
 
         // 4. Filtrar campos solicitados contra la lista de campos válidos
         $finalFields = array_intersect($requestedFields, $validFields);

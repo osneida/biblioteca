@@ -14,7 +14,7 @@ class FilterScope implements Scope
     public function apply(Builder $builder, Model $model): void
     {
         // -------------------------------------------------------------------
-        // 🔥 FIX CRÍTICO: Autodefensa para evitar la fuga a subconsultas (Eager Loading).
+        // Autodefensa para evitar la fuga a subconsultas (Eager Loading).
         // Si la tabla actual NO es la tabla del modelo base, ignoramos la aplicación.
         $modelTableName = $model->getTable();
         $currentQueryTable = $builder->getQuery()->from;
@@ -47,11 +47,9 @@ class FilterScope implements Scope
 
                     if (in_array($operator, ['=', '!=', '>', '<', '>=', '<='])) {
                         $builder->where($field, $operator, $value);
-
                     } elseif ($operator === 'like' || $operator === 'not_like') {
                         $dbOperator = ($operator === 'like') ? 'LIKE' : 'NOT LIKE';
                         $builder->where($field, $dbOperator, "%$value%");
-
                     } elseif ($operator === 'in' || $operator === 'not_in') {
                         $values = is_array($value) ? $value : explode(',', $value);
 
@@ -61,7 +59,6 @@ class FilterScope implements Scope
                             $builder->whereNotIn($field, $values);
                         }
                     }
-                    // Opcional: Podrías añadir un 'else' para loggear operadores desconocidos.
                 }
             }
             // Si el filtro es un array indexado (whereIn simple, ej: ?filters[id][]=1&filters[id][]=2)
