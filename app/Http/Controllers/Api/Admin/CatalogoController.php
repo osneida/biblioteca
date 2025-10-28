@@ -54,7 +54,6 @@ class CatalogoController extends Controller implements HasMiddleware
     {
         Gate::authorize('catalogo.index');
         $catalogos = Catalogo::query()
-            ->applyApiFeatures()
             ->getOrPaginate();
 
         return CatalogoResource::collection($catalogos);
@@ -183,20 +182,6 @@ class CatalogoController extends Controller implements HasMiddleware
     {
         Gate::authorize('catalogo.show');
 
-        $query = Catalogo::query();
-
-        // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
-        $query->where($catalogo->getKeyName(), $catalogo->getKey());
-        // Aplicar los mismos scopes que en index (select, include, filters, sort)
-        $query->applyApiFeatures();
-
-        // Obtener directamente el primer resultado o lanzar ModelNotFoundException
-        $catalogo = $query->firstOrFail();
-        if (!$catalogo) {
-            return response()->json([
-                'message' => 'No se encontró el documento solicitado.'
-            ], 404);
-        }
 
         return new CatalogoResource($catalogo);
     }

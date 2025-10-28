@@ -11,17 +11,6 @@ class SelectScope implements Scope
 {
     public function apply(Builder $builder, Model $model): void
     {
-        // -------------------------------------------------------------------
-        // Autodefensa para evitar la fuga a subconsultas (Eager Loading).
-        // Si la tabla actual NO es la tabla del modelo base, ignoramos la aplicación.
-        $modelTableName = $model->getTable();
-        $currentQueryTable = $builder->getQuery()->from;
-
-        if ($currentQueryTable !== $modelTableName) {
-            return;
-        }
-        // -------------------------------------------------------------------
-
         if (empty(request('select'))) {
             return;
         }
@@ -29,16 +18,17 @@ class SelectScope implements Scope
         $select = request('select');
         $requestedFields = explode(',', $select);
 
-        // 1. Definir campos válidos base
+        // 1. Definir campos válidos base definidos en el modelo
         $validFields = method_exists($model, 'getFillable') ? $model->getFillable() : [];
 
-        // 2. Incluir siempre la clave primaria
+        // 2. Incluir siempre la clave primaria, 'id' aunque no esté en fillable
         $validFields[] = $model->getKeyName();
+        $requestedFields[] = $model->getKeyName();
 
-        // 4. Filtrar campos solicitados contra la lista de campos válidos
-        $finalFields = array_intersect($requestedFields, $validFields);
+        // 3. Filtrar campos solicitados contra la lista de campos válidos
+        $requestedFields = array_intersect($requestedFields, $validFields);
 
-        // Si el cliente solicitó includes, asegurarnos de agregar las FKs necesarias
+        // 4.  Si el cliente solicitó includes, asegurarnos de agregar las FKs necesarias
         // para relaciones BelongsTo para que load() o los recursos puedan resolverlas
         // sin necesidad de reconsultar la base.
         $include = request('include');
@@ -57,20 +47,22 @@ class SelectScope implements Scope
                 // Sólo añadir claves foráneas para relaciones BelongsTo (p. ej. editorial)
                 if ($relationObj instanceof BelongsTo && method_exists($relationObj, 'getForeignKeyName')) {
                     $fk = $relationObj->getForeignKeyName();
-                    if ($fk && ! in_array($fk, $finalFields, true)) {
-                        $finalFields[] = $fk;
+                    if ($fk && ! in_array($fk, $requestedFields, true)) {
+                        $requestedFields[] = $fk;
                     }
                 }
             }
         }
 
         // Si después del filtrado no queda nada, volvemos a seleccionar solo la clave primaria
-        if (empty($finalFields)) {
+        if (empty($requestedFields)) {
             // Esto asegura que la consulta no falle y al menos se pueda relacionar con otros modelos.
-            $finalFields[] = $model->getKeyName();
+            $requestedFields[] = $model->getKeyName();
         }
 
         // Aplicar la selección
-        $builder->select(array_unique($finalFields));
+        if (!empty($requestedFields)) {
+            $builder->select(array_unique($requestedFields));
+        }
     }
 }
