@@ -34,7 +34,7 @@ class CatalogoTest extends TestCase
         $autor2 = \App\Models\Autor::factory()->create();
 
         $ano_publicacion = $this->faker->year();
-        $titulo = $this->faker->name();
+        $titulo = "OsneidaBordones"; //$this->faker->name();
         $subtitulo = $this->faker->text();
         $fecha_actual_bd = Carbon::now()->format('Y-m-d');
         $cantidad_ejemplares_creados = 2;
@@ -46,14 +46,14 @@ class CatalogoTest extends TestCase
             "fecha_ingreso" => $fecha_actual_bd,
             "ano_publicacion" => $ano_publicacion,
             "tipo_documento" => 1,
-            "isbn" => '1234567890123', //$this->faker->unique()->name(12),
+            "isbn" => "1234567890123", //$this->faker->unique()->name(12),
             "titulo" => $titulo,
             "subtitulo" =>  $subtitulo,
             "editorial_id" => $editorial->id,
             "descripcion_fisica" => "Esta bonito",
             "notas" => "tiene varios ejemplares",
+            "cantidad_de_ejemplares" => $cantidad_ejemplares_creados,
             "autores" => [$autor1->id, $autor2->id],
-            "cantidad_de_ejemplares" => $cantidad_ejemplares_creados
         ];
 
         $response = $this->withHeaders([

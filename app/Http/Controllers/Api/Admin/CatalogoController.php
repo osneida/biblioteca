@@ -182,7 +182,7 @@ class CatalogoController extends Controller implements HasMiddleware
     {
         Gate::authorize('catalogo.show');
 
-
+        $catalogo = $catalogo->getShow();
         return new CatalogoResource($catalogo);
     }
 
