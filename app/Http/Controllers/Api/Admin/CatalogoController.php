@@ -54,6 +54,7 @@ class CatalogoController extends Controller implements HasMiddleware
     {
         Gate::authorize('catalogo.index');
         $catalogos = Catalogo::query()
+            ->applyApiFeatures()
             ->getOrPaginate();
 
         return CatalogoResource::collection($catalogos);
@@ -182,7 +183,14 @@ class CatalogoController extends Controller implements HasMiddleware
     {
         Gate::authorize('catalogo.show');
 
-        $catalogo = $catalogo->getShow();
+        $query = Catalogo::query();
+        // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
+        $query->where($catalogo->getKeyName(), $catalogo->getKey());
+        // Aplicar los scopes para show (select, include)
+        $query->showApiFeatures();
+
+        // Obtener directamente el primer resultado o lanzar ModelNotFoundException
+        $catalogo = $query->firstOrFail();
         return new CatalogoResource($catalogo);
     }
 
@@ -232,5 +240,24 @@ class CatalogoController extends Controller implements HasMiddleware
                 'message' => 'Ocurrió un error al intentar eliminar el documento.'
             ], 500);
         }
+    }
+
+    public function stoxxre(CatalogoRequest $request)
+    {
+        $searchData = [
+            'tipo_documento' => $request['tipo_documento'],
+            'editorial_id' => $request['editorial_id'],
+            'titulo' => $request['titulo'],
+            'subtitulo' => $request['subtitulo'],
+            'ano_publicacion' => $request['ano_publicacion'],
+            'descripcion_fisica' => $request['descripcion_fisica'],
+            'notas' => $request['notas'],
+            'user_id' => Auth::id()   //usuario autenticado
+        ];
+
+        $catalogo = Catalogo::create($searchData);
+        return (new CatalogoResource($catalogo))->additional([
+            'message' => 'success',
+        ])->response()->setStatusCode(201);
     }
 }

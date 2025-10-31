@@ -116,6 +116,53 @@ class EditorialTest extends TestCase
         $response->assertStatus(204);
     }
 
+    /**
+     * Test para verificar que no se puede eliminar
+     * una editorial si tiene catálogos asociados.
+     * Espera un status 409 Conflict.
+     */
+    public function test_cannot_delete_editorial_with_associated_catalogos()
+    {
+        // 1. Setup: Crear una editorial y asociarle al menos un catálogo
+        $editorial = \App\Models\Editorial::factory()->create();
+        $autor = \App\Models\Autor::factory()->create();
+
+        $catalogo = [
+            "fecha_ingreso" => '2025-10-29',
+            "ano_publicacion" => '2010',
+            "tipo_documento" => 1,
+            "titulo" => 'Libro sobre Laravel',
+            "editorial_id" => $editorial->id,
+            "descripcion_fisica" => "Esta bonito",
+            "notas" => "tiene varios ejemplares",
+            "cantidad_de_ejemplares" => 1,
+            "autores" => [$autor->id],
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->postJson('/api/v1/catalogos', $catalogo);
+
+
+        // 2. Ejecutar la petición DELETE
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->deleteJson("/api/v1/editoriales/{$editorial->id}");
+
+        // 3. Afirmaciones
+        // Verificar el código de estado 409 Conflict
+        $response->assertStatus(409)
+            // Verificar el mensaje de error específico
+            ->assertJson([
+                'message' => 'No se puede eliminar la Editorial porque tiene un documento asociado.',
+            ]);
+
+        // Verificar que la editorial sigue existiendo en la base de datos
+        $this->assertDatabaseHas('editorials', ['id' => $editorial->id]);
+    }
+
     /** TEST PERMISOS*/
     //test para verificar que un usuario sin el rol de catalogador
     //no puede crear un editorial

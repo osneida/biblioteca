@@ -96,8 +96,8 @@ class AutorController extends Controller implements HasMiddleware
         $query = Autor::query();
         // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
         $query->where($autore->getKeyName(), $autore->getKey());
-        // Aplicar los mismos scopes que en index (select, include, filters, sort)
-        $query->applyApiFeatures();
+        // Aplicar los scopes para show (select, include)
+        $query->showApiFeatures();
 
         // Obtener directamente el primer resultado o lanzar ModelNotFoundException
         $autor = $query->firstOrFail();

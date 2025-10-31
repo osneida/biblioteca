@@ -13,7 +13,7 @@ class CatalogoTest extends TestCase
     /**
      * 1.- Test para el CRUD de Catalogos
      * 2.- Test para los permisos de Catalogos
-     * 3.- Test para las validaciones de Catalogos
+     * 3.- Test para las validaciones de los campos del Catalogo
      * 4.- Test para los filtros
      */
 
@@ -27,6 +27,7 @@ class CatalogoTest extends TestCase
     }
 
     //1.- Test para el CRUD
+
     public function test_create_catalogo()
     {
         $editorial = \App\Models\Editorial::factory()->create();

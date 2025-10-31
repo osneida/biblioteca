@@ -24,6 +24,11 @@ trait HasApiFeatures
         SortScope::class,
     ];
 
+    protected static array $showScopes = [
+        IncludeScope::class,
+        SelectScope::class,
+    ];
+
     /**
      * Scope LOCAL compuesto que aplica todos los scopes de API.
      * Solo se aplica cuando se llama explícitamente en el Controller.
@@ -57,8 +62,31 @@ trait HasApiFeatures
     /**
      * Obtiene un registro único aplicando los scopes de API.
      */
-    // public function scopeGetShow(Builder $query): \Illuminate\Database\Eloquent\Model
-    // {
-    //     return $query->firstOrFail();
-    // }
+    public function scopeShowApiFeatures(Builder $query): Builder
+    {
+        // Itera sobre la lista de scopes de la API
+        foreach (static::$showScopes as $scopeClass) {
+            $scopeInstance = new $scopeClass;
+
+            // Aplica el scope SÓLO a la consulta $query actual.
+            // Esto previene que se filtren a las consultas de Eager Loading.
+            $scopeInstance->apply($query, $query->getModel());
+        }
+
+        return $query;
+    }
+
+    public function scopeGetShow(Builder $query): Builder
+    {
+        // Itera sobre la lista de scopes de la API
+        foreach (static::$showScopes as $scopeClass) {
+            $scopeInstance = new $scopeClass;
+
+            // Aplica el scope SÓLO a la consulta $query actual.
+            // Esto previene que se filtren a las consultas de Eager Loading.
+            $scopeInstance->apply($query, $query->getModel());
+        }
+
+        return $query;
+    }
 }

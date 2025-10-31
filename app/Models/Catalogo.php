@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-//use App\Models\Traits\HasApiFeatures;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Traits\HasApiFeatures;
 
-class Catalogo extends Api
+class Catalogo extends Model
 {
-    use  HasFactory; //HasApiFeatures
+    use  HasFactory, HasApiFeatures;
 
     public $fillable = [
         'tipo_documento',

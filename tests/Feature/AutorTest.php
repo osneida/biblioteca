@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use App\Trait\Test\AuthenticatesAsCataloger;
 use Tests\TestCase;
+use Carbon\Carbon;
 
 class AutorTest extends TestCase
 {
@@ -86,6 +87,54 @@ class AutorTest extends TestCase
 
         $response->assertStatus(204);
     }
+
+    /**
+     * Test para verificar que no se puede eliminar
+     * un autor si tiene catálogos asociados.
+     * Espera un status 409 Conflict.
+     */
+    public function test_cannot_delete_autor_with_associated_catalogos()
+    {
+        // 1. Setup: Crear un autor y asociarle al menos un catálogo
+        $editorial = \App\Models\Editorial::factory()->create();
+        $autor = \App\Models\Autor::factory()->create();
+
+        $catalogo = [
+            "fecha_ingreso" => '2025-10-29',
+            "ano_publicacion" => '2010',
+            "tipo_documento" => 1,
+            "titulo" => 'Libro sobre Laravel',
+            "editorial_id" => $editorial->id,
+            "descripcion_fisica" => "Esta bonito",
+            "notas" => "tiene varios ejemplares",
+            "cantidad_de_ejemplares" => 1,
+            "autores" => [$autor->id],
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->postJson('/api/v1/catalogos', $catalogo);
+
+
+        // 2. Ejecutar la petición DELETE
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->deleteJson("/api/v1/autores/{$autor->id}");
+
+        // 3. Afirmaciones
+        // Verificar el código de estado 409 Conflict
+        $response->assertStatus(409)
+            // Verificar el mensaje de error específico
+            ->assertJson([
+                'message' => 'No se puede eliminar el autor porque tiene un documento asociado.',
+            ]);
+
+        // Verificar que el autor sigue existiendo en la base de datos
+        $this->assertDatabaseHas('autors', ['id' => $autor->id]);
+    }
+
 
     /** TEST PERMISOS*/
     //test para verificar que un usuario sin el rol de catalogador no puede crear un autor
@@ -597,5 +646,149 @@ class AutorTest extends TestCase
         rsort($sortedNombres);
 
         $this->assertEquals($sortedNombres, $nombres);
+    }
+
+    //filtros para el methodo show
+    public function test_autor_show_select_specific_fields()
+    {
+        // Crear un autor
+        $autor = \App\Models\Autor::factory()->create(
+            [
+                'nombre' => 'Isabel Allende',
+                'nacionalidad' => 'E',
+                'biografia' => 'Autora chilena.',
+            ]
+        );
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->getJson("/api/v1/autores/{$autor->id}?select=id,nombre");
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'nombre',
+                ],
+            ])
+            ->assertJsonMissing([
+                'nacionalidad' => 'CL',
+                'biografia' => 'Autora chilena.'
+            ]) // No debe contener nacionalidad, ni biografia
+            // Opcional: Afirmar que los valores de los campos seleccionados son correctos
+            ->assertJsonFragment([
+                'data' => [
+                    'id' => $autor->id,
+                    'nombre' => 'Isabel Allende',
+                ]
+            ]);
+    }
+
+    /**
+     * Test para verificar la selección de campos y
+     * la inclusión de una relación (catalogos)
+     * en la ruta show de un autor.
+     */
+    public function test_autor_show_with_include_and_select()
+    {
+        $editorial = \App\Models\Editorial::factory()->create();
+        $ano_publicacion = $this->faker->year();
+        $subtitulo = $this->faker->text();
+        $fecha_actual_bd = Carbon::now()->format('Y-m-d');
+        $cantidad_ejemplares_creados = 2;
+
+        // 1. Crear un autor
+        $autor = \App\Models\Autor::factory()->create([
+            'nombre' => 'Autor con Catalogos',
+            'nacionalidad' => 'V', // Campo que debe ser excluido por 'select'
+            'biografia' => 'Biografía de prueba.', // Campo que debe ser excluido por 'select'
+        ]);
+        // 2. Crear catálogos asociados al autor
+        $catalogo1 = [
+            "fecha_ingreso" => $fecha_actual_bd,
+            "ano_publicacion" => $ano_publicacion,
+            "tipo_documento" => 1,
+            "titulo" => 'Libro sobre Laravel',
+            "subtitulo" =>  $subtitulo,
+            "editorial_id" => $editorial->id,
+            "descripcion_fisica" => "Esta bonito",
+            "notas" => "tiene varios ejemplares",
+            "cantidad_de_ejemplares" => $cantidad_ejemplares_creados,
+            "autores" => [$autor->id],
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->postJson('/api/v1/catalogos', $catalogo1);
+
+        $catalogo2 = [
+            "fecha_ingreso" => $fecha_actual_bd,
+            "ano_publicacion" => $ano_publicacion,
+            "tipo_documento" => 1,
+            "titulo" => 'Revista de PHP',
+            "subtitulo" =>  $subtitulo,
+            "editorial_id" => $editorial->id,
+            "descripcion_fisica" => "Esta bonito",
+            "notas" => "tiene varios ejemplares",
+            "cantidad_de_ejemplares" => $cantidad_ejemplares_creados,
+            "autores" => [$autor->id],
+        ];
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->postJson('/api/v1/catalogos', $catalogo2);
+
+        // 3. Realizar la petición GET: /api/v1/autores/{id}?select=id,nombre&include=catalogos
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->getJson("/api/v1/autores/{$autor->id}?select=id,nombre&include=catalogos");
+
+        // 4. Afirmaciones
+        $response->assertStatus(200)
+            // A. Estructura principal (solo id, nombre y catalogos)
+            ->assertJsonStructure([
+                'data' => [
+                    'id',
+                    'nombre',
+                    'catalogos' => [
+                        '*' => [
+                            'id',
+                            'tipo_documento',
+                            'tipo_documento_label',
+                            'isbn',
+                            'titulo',
+                            'subtitulo',
+                            'ano_publicacion',
+                            'descripcion_fisica',
+                            'notas',
+                            'user_id',
+                            'editorial_id'
+                        ]
+                    ]
+                ],
+            ])
+            // B. Verificar que los campos del autor principal no solicitados están ausentes
+            ->assertJsonMissing([
+                'nacionalidad' => 'V',
+                'biografia' => 'Biografía de prueba.'
+            ])
+            //C. Verificar los datos del autor principal
+            ->assertJsonFragment([
+                'id' => $autor->id,
+                'nombre' => 'Autor con Catalogos',
+            ])
+            //D. Verificar que la relación 'catalogos' se incluyó correctamente
+            ->assertJsonCount(2, 'data.catalogos')
+            // E. Verificar el contenido de los catálogos
+            ->assertJsonFragment([
+                'titulo' => 'Libro sobre Laravel',
+            ])
+            ->assertJsonFragment([
+                'titulo' => 'Revista de PHP',
+            ]);
     }
 }
