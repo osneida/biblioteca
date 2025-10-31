@@ -144,7 +144,6 @@ class EditorialTest extends TestCase
             'Accept' => 'application/json',
         ])->postJson('/api/v1/catalogos', $catalogo);
 
-
         // 2. Ejecutar la petición DELETE
         $response = $this->withHeaders([
             'Authorization' => "Bearer {$this->jwtToken}",

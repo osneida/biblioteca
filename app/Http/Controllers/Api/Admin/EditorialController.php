@@ -111,8 +111,8 @@ class EditorialController extends Controller implements HasMiddleware
         $query = Editorial::query();
         // 2. Aplicamos la restricción WHERE al ID que ya fue encontrado por el Route Model Binding.
         $query->where($editoriale->getKeyName(), $editoriale->getKey());
-        // Aplicar los mismos scopes que en index (select, include, filters, sort)
-        $query->applyApiFeatures();
+        // Aplicar los scopes para show (select, include)
+        $query->showApiFeatures();
 
         // Obtener directamente el primer resultado o lanzar ModelNotFoundException
         $editorial = $query->firstOrFail();

@@ -648,6 +648,47 @@ class AutorTest extends TestCase
         $this->assertEquals($sortedNombres, $nombres);
     }
 
+    /**
+     * test para verificar que trae el autor con el id correcto
+     */
+    public function test_autor_show_id_2()
+    {
+        // Crear los autores
+        $autor1 = \App\Models\Autor::factory()->create(
+            [
+                'nombre' => 'Autor 1',
+                'nacionalidad' => 'E',
+            ]
+        );
+
+        $autor2 = \App\Models\Autor::factory()->create(
+            [
+                'nombre' => 'Autor 2',
+                'nacionalidad' => 'V',
+            ]
+        );
+
+        $autor3 = \App\Models\Autor::factory()->create(
+            [
+                'nombre' => 'Autor 3',
+                'nacionalidad' => 'E',
+            ]
+        );
+
+        $response = $this->withHeaders([
+            'Authorization' => "Bearer {$this->jwtToken}",
+            'Accept' => 'application/json',
+        ])->getJson("/api/v1/autores/{$autor2->id}");
+
+        $response->assertStatus(200)
+            // Afirmar que los valores de los campos seleccionados son correctos
+            ->assertJsonFragment([
+                'id' => $autor2->id,
+                'nombre' => 'Autor 2',
+                'nacionalidad' => 'V',
+            ]);
+    }
+
     //filtros para el methodo show
     public function test_autor_show_select_specific_fields()
     {
@@ -673,7 +714,7 @@ class AutorTest extends TestCase
                 ],
             ])
             ->assertJsonMissing([
-                'nacionalidad' => 'CL',
+                'nacionalidad' => 'E',
                 'biografia' => 'Autora chilena.'
             ]) // No debe contener nacionalidad, ni biografia
             // Opcional: Afirmar que los valores de los campos seleccionados son correctos
