@@ -241,23 +241,4 @@ class CatalogoController extends Controller implements HasMiddleware
             ], 500);
         }
     }
-
-    public function stoxxre(CatalogoRequest $request)
-    {
-        $searchData = [
-            'tipo_documento' => $request['tipo_documento'],
-            'editorial_id' => $request['editorial_id'],
-            'titulo' => $request['titulo'],
-            'subtitulo' => $request['subtitulo'],
-            'ano_publicacion' => $request['ano_publicacion'],
-            'descripcion_fisica' => $request['descripcion_fisica'],
-            'notas' => $request['notas'],
-            'user_id' => Auth::id()   //usuario autenticado
-        ];
-
-        $catalogo = Catalogo::create($searchData);
-        return (new CatalogoResource($catalogo))->additional([
-            'message' => 'success',
-        ])->response()->setStatusCode(201);
-    }
 }
