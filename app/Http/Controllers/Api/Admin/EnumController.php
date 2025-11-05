@@ -10,7 +10,9 @@ class EnumController extends Controller
     /**
      * Tipo de Documentos
      *
-     * Tipos de documentos que puede tener un catálogo
+     * Tipos de documentos que puede tener un catálogo <br>
+     * tipo_documento: Libro = 1, Revista = 2, Novela = 3,
+     * Tesis = 4, Pretesis = 5, Periódico = 6, Película  = 7, Música = 8;
      * @param  \App\Enums\TipoDocumentoEnum::cases()
      * @return TipoDocumentoEnum
      */

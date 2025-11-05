@@ -49,13 +49,13 @@ class CatalogoRequest extends FormRequest
         // }
 
         return [
-            'titulo'            => 'required|string|max:255',
-            'subtitulo'         => 'nullable|string|max:255',
+            'titulo'            => 'required|string|max:255|min:3',
+            'subtitulo'         => 'nullable|string|max:255|min:3',
             //tipo_documento: Libro = 1, Revista = 2, Novela = 3, Tesis = 4, Pretesis = 5, Periódico = 6, Película  = 7, Música = 8;
             'tipo_documento'    => 'required|integer|min:1|' . Rule::in(TipoDocumentoEnum::values()),
-            'ano_publicacion'   => 'nullable|string|size:4',
-            'descripcion_fisica' => 'nullable|string|max:255',
-            'notas'             => 'nullable|string',
+            'ano_publicacion'   => 'required|string|size:4',
+            'descripcion_fisica' => 'nullable|string|min:3',
+            'notas'             => 'nullable|string|min:3',
             'isbn'              => 'nullable|string|max:13|unique:catalogos,isbn,' . $this->catalogo?->id,
             'editorial_id'      => 'required|exists:editorials,id',
             'autores'           => 'required|array|min:1',
@@ -63,7 +63,7 @@ class CatalogoRequest extends FormRequest
             //fecha_ingreso: para usar en ejmplares.
             'fecha_ingreso'     => 'required|date|before_or_equal:today',
             //cantidad_de_ejemplares: crea la cantidad de ejemplares indicada, sino se indica crea un ejemplar
-            'cantidad_de_ejemplares' => 'nullable|integer',
+            'cantidad_de_ejemplares' => 'nullable|integer|min:1',
         ];
     }
 }

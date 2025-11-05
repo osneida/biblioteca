@@ -12,13 +12,13 @@ use App\Models\User;
 class AuthController extends Controller //implements HasMiddleware
 {
 
-    /*  public static function middleware(): array
+    public static function middleware(): array
     {
         return [
             new Middleware('auth:api', except: ['login']),
         ];
     }
-*/
+
     public function login()
     {
         $credentials = request(['email', 'password']);

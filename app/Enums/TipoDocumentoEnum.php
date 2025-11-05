@@ -12,7 +12,8 @@ enum TipoDocumentoEnum: int
     case Periódico = 6;
     case Película  = 7;
     case Música    = 8;
-
+    //si crean un nuevo tipo de documento, modificar el controlador EnumController.php
+    //en la documentación del método tiposDocumento()
     public function label(): string
     {
         return match ($this) {
