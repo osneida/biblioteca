@@ -101,3 +101,19 @@ Scripts útiles (desde composer.json)
 
 -   Si trabajas con tests que requieren autenticación JWT revisa [`App\Trait\Test\AuthenticatesAsCataloger`](app/Trait/Test/AuthenticatesAsCataloger.php) para el flujo de creación de usuario y generación de token.
 -   Para cambiar proveedores JWT revisa [config/jwt.php](config/jwt.php).
+
+## Integración continua (GitHub Actions)
+
+Este repositorio dispone de un workflow de GitHub Actions que ejecuta las pruebas automáticamente en cada push y en cada pull request. El archivo del workflow se ubica en:
+
+.github/workflows/tests.yml
+
+Badge de estado de las pruebas (si lo deseas mostrar):
+
+[![Tests](https://github.com/osneida/biblioteca/actions/workflows/tests.yml/badge.svg)](https://github.com/osneida/biblioteca/actions/workflows/tests.yml)
+
+Resumen del flujo de trabajo:
+
+-   Instalación de dependencias (composer / npm ).
+-   Preparación del entorno de pruebas (.env.testing, migraciones).
+-   Ejecución de las pruebas con php artisan test.
