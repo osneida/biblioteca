@@ -25,6 +25,7 @@ API RESTful desarrollada con Laravel para la gestión bibliotecaria. Esta API ut
 -   Roles y permisos con Spatie.
 -   Tests automatizados con PHPUnit.
 -   Documentación automática (Scramble).
+-   Documentación automática (swagger, en un pull requests, rama: documentando_con_swagger).
 
 **Requisitos**
 
@@ -107,10 +108,6 @@ Scripts útiles (desde composer.json)
 Este repositorio dispone de un workflow de GitHub Actions que ejecuta las pruebas automáticamente en cada push y en cada pull request. El archivo del workflow se ubica en:
 
 .github/workflows/tests.yml
-
-Badge de estado de las pruebas (si lo deseas mostrar):
-
-[![Tests](https://github.com/osneida/biblioteca/actions/workflows/tests.yml/badge.svg)](https://github.com/osneida/biblioteca/actions/workflows/tests.yml)
 
 Resumen del flujo de trabajo:
 
